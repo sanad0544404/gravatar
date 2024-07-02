@@ -1,0 +1,29 @@
+{
+	"$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
+	"git": {
+		"requireBranch": "trunk",
+		"requireCleanWorkingDir": false,
+		"commitMessage": "chore: release ${name} v${version}",
+		"changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/main/templates/changelog-compact.hbs"
+	},
+	"github": {
+		"release": true,
+		"assets": ["release/quick-editor.zip"]
+	},
+	"npm": {
+		"publish": true
+	},
+	"hooks": {
+		"before:init": [
+			"git pull",
+			"npm install",
+			"npm run build",
+			"npm run clean:release",
+			"mkdir -p release/quick-editor",
+			"cp -r dist/* release/quick-editor",
+			"(cd release; zip -r quick-editor.zip quick-editor/*)"
+		],
+		"after:bump": "npx auto-changelog -p",
+		"after:release": "echo 🎉 Successfully released ${name} v${version} to ${repo.repository}."
+	}
+}

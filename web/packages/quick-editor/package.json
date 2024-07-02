@@ -30,7 +30,10 @@
 		"build:types": "tsc --declaration --declarationMap --emitDeclarationOnly",
 		"build:dev": "npm run clean:dist && run-p 'build:types' 'build:core --node-env=development'",
 		"build:watch": "npm run build:dev && watch 'npm run build:dev' ./src",
-		"clean:dist": "rimraf dist"
+		"clean:dist": "rimraf dist",
+		"clean:release": "rimraf release",
+		"clean": "run-p 'clean:*'",
+		"release": "release-it"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.24.5",
@@ -40,6 +43,7 @@
 		"@wordpress/prettier-config": "^4.1.0",
 		"babel-loader": "^9.1.3",
 		"html-webpack-plugin": "^5.5.3",
+		"release-it": "^17.4.0",
 		"rimraf": "^5.0.1",
 		"terser-webpack-plugin": "^5.3.9",
 		"typescript": "^5.1.6",
