@@ -66,3 +66,5 @@ This project utilizes [release-it](https://github.com/release-it/release-it) for
     - Choose the appropriate `Version type` (we use [Semantic Versioning](https://semver.org/))
     - Confirm by clicking on `Run workflow` again
 - Local Release (with the push permission): Navigate to the `web/packages/hovercards` folder, run `npm run release`, and follow the instructions.
+
+After the package is released, review [the release notes](https://github.com/Automattic/gravatar/releases) and make any necessary modifications.
