@@ -53,7 +53,7 @@ export class GravatarQuickEditorCore {
 		window.addEventListener( 'message', this._onMessage.bind( this ) );
 	}
 
-	open: Open = ( email?: string ) => {
+	open: Open = ( email ) => {
 		email = email || this._email;
 
 		if ( ! email ) {

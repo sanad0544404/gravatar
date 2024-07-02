@@ -10,18 +10,16 @@ export type QuickEditorOptions = {
 }
 
 export default class GravatarQuickEditor {
-	_quickEditor: GravatarQuickEditorCore;
-	_editorTrigger: HTMLElement;
 	_avatarList: NodeListOf<HTMLImageElement>;
 	_avatarRefreshDelay: number;
 
 	constructor( { email, editorTriggerSelector, avatarSelector, scope, local, avatarRefreshDelay }: QuickEditorOptions ) {
-		this._quickEditor = new GravatarQuickEditorCore( { email, scope, local, onProfileUpdated: this._onProfileUpdated.bind( this ) } );
-		this._editorTrigger = document.querySelector( editorTriggerSelector );
 		this._avatarList = document.querySelectorAll( avatarSelector );
 		this._avatarRefreshDelay = avatarRefreshDelay || 1000;
+		const quickEditor = new GravatarQuickEditorCore( { email, scope, local, onProfileUpdated: this._onProfileUpdated.bind( this ) } );
+		const editorTrigger = document.querySelector( editorTriggerSelector );
 
-		this._editorTrigger?.addEventListener( 'click', () => this._quickEditor.open() );
+		editorTrigger?.addEventListener( 'click', () => quickEditor.open() );
 	}
 
 	_onProfileUpdated( type: ProfileUpdatedType ) {
