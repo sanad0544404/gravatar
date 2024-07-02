@@ -14,6 +14,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		scope: [ 'avatars', 'about' ],
 		local: 'es',
 		onProfileUpdated: ( type: ProfileUpdatedType ) => {
+			// eslint-disable-next-line
 			console.log( type );
 		},
 	} );

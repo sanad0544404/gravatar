@@ -64,7 +64,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
 The `GravatarQuickEditorCore` class provides advanced control over the Gravatar Quick Editor functionality, allowing developers to trigger popup events and set up profile update callbacks.
 
-#### Example
+#### Core Example
 
 ```typescript
 import { GravatarQuickEditorCore } from '@gravatar-com/quick-editor';
@@ -89,9 +89,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
 ## API
 
-### GravatarQuickEditor
-
-#### Constructor
+### GravatarQuickEditor API
 
 ```typescript
 new GravatarQuickEditor(options: QuickEditorOptions);
@@ -129,9 +127,7 @@ type QuickEditorOptions = {
   The delay in milliseconds before the avatar image is refreshed after an update. This can help ensure any cache can be busted before the new image is displayed.
 
 
-### GravatarQuickEditorCore
-
-#### Constructor
+### GravatarQuickEditorCore API
 
 ```typescript
 new GravatarQuickEditorCore(options: QuickEditorCoreOptions);

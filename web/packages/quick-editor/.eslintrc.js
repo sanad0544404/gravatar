@@ -3,8 +3,10 @@ module.exports = {
 		ecmaVersion: 'latest',
 		sourceType: 'module',
 	},
-	extends: ['plugin:@wordpress/eslint-plugin/recommended'],
+	extends: [ 'plugin:@wordpress/eslint-plugin/recommended' ],
+	plugins: [ 'prettier' ],
 	rules: {
+		'prettier/prettier': [ 'error', require( './.prettierrc.js' ) ], // Uses our .prettierrc.js config
 		'@wordpress/i18n-no-variables': 'off',
 	},
 };

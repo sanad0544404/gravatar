@@ -8,10 +8,10 @@ const ScopeList = [
 	'wallet',
 	'photos',
 	'design',
-	'privacy'
+	'privacy',
 ] as const;
 
-export type Scope = typeof ScopeList[number][];
+export type Scope = ( typeof ScopeList )[ number ][];
 
 export type ProfileUpdatedType = 'avatar_updated' | 'profile_updated';
 
@@ -21,13 +21,13 @@ export type OnProfileUpdated = ( type: ProfileUpdatedType ) => void;
 
 export type OnOpened = () => void;
 
-export type QuickEditorCoreOptions = Partial<{
+export type QuickEditorCoreOptions = Partial< {
 	email: string;
 	scope: Scope;
 	local: string;
 	onProfileUpdated: OnProfileUpdated;
 	onOpened: OnOpened;
-}>;
+} >;
 
 export class GravatarQuickEditorCore {
 	_name: string;
@@ -45,9 +45,12 @@ export class GravatarQuickEditorCore {
 		this._onProfileUpdated = onProfileUpdated;
 		this._onOpened = onOpened;
 
-		if ( ! this._scope.every( s => ScopeList.includes( s ) ) ) {
-			console.error( 'Gravatar Quick Editor: Invalid scope definition. Available scope: ' + ScopeList.join( ', ' ) );
-			this._scope = this._scope.filter( s => ScopeList.includes( s ) );
+		if ( ! this._scope.every( ( s ) => ScopeList.includes( s ) ) ) {
+			// eslint-disable-next-line
+			console.error(
+				'Gravatar Quick Editor: Invalid scope definition. Available scope: ' + ScopeList.join( ', ' )
+			);
+			this._scope = this._scope.filter( ( s ) => ScopeList.includes( s ) );
 		}
 
 		window.addEventListener( 'message', this._onMessage.bind( this ) );
@@ -57,6 +60,7 @@ export class GravatarQuickEditorCore {
 		email = email || this._email;
 
 		if ( ! email ) {
+			// eslint-disable-next-line
 			console.error( 'Gravatar Quick Editor: Email not provided' );
 			return;
 		}
@@ -74,7 +78,7 @@ export class GravatarQuickEditorCore {
 		if ( this._onOpened ) {
 			this._onOpened();
 		}
-	}
+	};
 
 	_getName() {
 		return `GravatarQuickEditor_${ new Date().getTime() }${ Math.floor( Math.random() * ( 9999 - 1000 ) + 1000 ) }`;
