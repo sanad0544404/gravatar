@@ -4,7 +4,7 @@ export type {
 	Open,
 	OnProfileUpdated,
 	OnOpened,
-	QuickEditorCoreOptions
+	QuickEditorCoreOptions,
 } from './quick-editor-core';
 
 export type { QuickEditorOptions } from './quick-editor';

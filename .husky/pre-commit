@@ -1,3 +1,6 @@
 #!/bin/sh
 cd web/packages/hovercards
 npx lint-staged
+
+cd ../quick-editor
+npx lint-staged
