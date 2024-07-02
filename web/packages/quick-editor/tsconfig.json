@@ -15,6 +15,6 @@
 		"stripInternal": true,
 		"outDir": "dist"
 	},
-	"include": [ "src", "playground" ],
+	"include": [ "src" ],
 	"exclude": [ "node_modules" ]
 }
