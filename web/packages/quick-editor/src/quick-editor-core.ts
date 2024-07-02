@@ -13,7 +13,7 @@ const ScopeList = [
 
 export type Scope = typeof ScopeList[number][];
 
-export type ProfileUpdatedType = 'avatar_updated';
+export type ProfileUpdatedType = 'avatar_updated' | 'profile_updated';
 
 export type Open = ( email?: string ) => void;
 

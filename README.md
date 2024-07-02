@@ -15,6 +15,9 @@ Bring Gravatar to your iOS apps with minimal effort. Our iOS SDK provides tools 
 ### [Gravatar Hovercards](web/packages/hovercards)
 Enhance your web applications with Gravatar Hovercards. Display user avatars and profiles on hover, providing quick access to user information without cluttering your UI.
 
+### [Gravatar Quick Editor](web/packages/quick-editor)
+Gravatar Quick Editor is a JavaScript library that allows users to integrate the Gravatar Quick Editor into their web applications, enabling easy editing of Gravatar profiles via a popup window.
+
 ## Join Our Community
 Together, we are building the open web. Your contributions and feedback are vital to the growth and improvement of Gravatar. Here’s how you can get involved:
 

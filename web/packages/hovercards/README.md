@@ -485,4 +485,4 @@ We welcome contributions to this project. Please follow the guidelines outlined 
 
 ## License
 
-Gravatar Hovercards is licensed under [GNU General Public License v2 (or later)](LICENSE.md).
+Gravatar Hovercards is licensed under [GNU General Public License v2 (or later)](../../../docs/LICENSE.md).
