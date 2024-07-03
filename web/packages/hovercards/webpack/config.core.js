@@ -59,8 +59,7 @@ const umdConfig = {
 		filename: 'index.umd.js',
 		library: {
 			name: 'Gravatar',
-			type: 'umd',
-			umdNamedDefine: true,
+			type: 'assign-properties',
 		},
 	},
 };

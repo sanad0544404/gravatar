@@ -57,9 +57,8 @@ const umdConfig = {
 		...baseConfig.output,
 		filename: 'index.umd.js',
 		library: {
-			name: 'GravatarQuickEditor',
-			type: 'umd',
-			umdNamedDefine: true,
+			name: 'Gravatar',
+			type: 'assign-properties',
 		},
 	},
 };
