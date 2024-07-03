@@ -65,13 +65,16 @@ export class GravatarQuickEditorCore {
 			return;
 		}
 
+		email = encodeURIComponent( email );
+		const scope = encodeURIComponent( this._scope.join( ',' ) );
+
 		const width = 400;
 		const height = 720;
 		const left = window.screenLeft + ( window.outerWidth - width ) / 2;
 		const top = window.screenTop + ( window.outerHeight - height ) / 2;
 		const options = `popup,width=${ width },height=${ height },top=${ top },left=${ left }`;
 		const host = this._local ? `https://${ this._local }.gravatar.com` : 'https://gravatar.com';
-		const url = `${ host }/profile?email=${ email }&scope=${ this._scope.join( ',' ) }&is_quick_editor=true`;
+		const url = `${ host }/profile?email=${ email }&scope=${ scope }&is_quick_editor=true`;
 
 		window.open( url, this._name, options );
 
