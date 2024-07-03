@@ -182,6 +182,10 @@ type QuickEditorCoreOptions = Partial<{
 - `design`
 - `privacy`
 
+## Contribute to Gravatar Quick Editor
+
+We welcome contributions to this project. Please follow the guidelines outlined in the [CONTRIBUTING.md](../../../docs/CONTRIBUTING.md) file.
+
 ## License
 
 Gravatar Hovercards is licensed under [GNU General Public License v2 (or later)](../../../docs/LICENSE.md).

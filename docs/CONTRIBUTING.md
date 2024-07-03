@@ -59,6 +59,7 @@ This project utilizes [release-it](https://github.com/release-it/release-it) for
 
 - GitHub Action:
     - Go to [the GitHub actions page](https://github.com/Automattic/gravatar/actions)
+    - Select the package you want to release from the list of workflows on the left side
     - Select the appropriate workflow on the left side
     - Click on the `Run workflow` button
     - Choose the appropriate `Version type` (we use [Semantic Versioning](https://semver.org/))
