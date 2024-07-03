@@ -481,7 +481,7 @@ The `i18n` option is an object that maps from the English text to the language o
 
 ## Contribute to Gravatar Hovercards
 
-We welcome contributions to this project. Please follow the guidelines outlined in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+We welcome contributions to this project. Please follow the guidelines outlined in the [CONTRIBUTING.md](../../../docs/CONTRIBUTING.md) file.
 
 ## License
 

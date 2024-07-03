@@ -127,6 +127,8 @@ type QuickEditorOptions = {
   The delay in milliseconds before the avatar image is refreshed after an update. This can help ensure any cache can be busted before the new image is displayed.
 
 
+> While updating the avatar image, to bypass the browser's cache, the Quick Editor will add a `t` parameter with the current timestamp to the avatar URL.
+
 ### GravatarQuickEditorCore API
 
 ```typescript
