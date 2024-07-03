@@ -1,10 +1,13 @@
+/* eslint-disable import/no-unresolved */
+// @ts-ignore
 import { GravatarQuickEditor, GravatarQuickEditorCore } from '../dist';
+// @ts-ignore
 import type { ProfileUpdatedType } from '../dist';
 
 document.addEventListener( 'DOMContentLoaded', () => {
 	new GravatarQuickEditor( {
 		email: 'joao.heringer@automattic.com',
-		scope: [ 'avatars' ],
+		scope: [ 'avatars', 'about' ],
 		editorTriggerSelector: '#edit-avatar',
 		avatarSelector: '.avatar',
 	} );
