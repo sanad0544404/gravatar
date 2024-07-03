@@ -1,6 +1,10 @@
 #!/bin/sh
-cd web/packages/hovercards
-npx lint-staged
 
-cd ../quick-editor
-npx lint-staged
+# Find all packages and run lint-staged in each
+for dir in web/packages/*/; do
+    if [ -d "$dir" ]; then
+        cd "$dir"
+        npx lint-staged
+        cd - > /dev/null
+    fi
+done
