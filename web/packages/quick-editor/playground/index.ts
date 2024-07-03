@@ -4,7 +4,7 @@ import type { ProfileUpdatedType } from '../dist';
 document.addEventListener( 'DOMContentLoaded', () => {
 	new GravatarQuickEditor( {
 		email: 'joao.heringer@automattic.com',
-		scope: [ 'avatars' ],
+		scope: [ 'avatars', 'about' ],
 		editorTriggerSelector: '#edit-avatar',
 		avatarSelector: '.avatar',
 	} );
