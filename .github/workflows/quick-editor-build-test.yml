@@ -1,0 +1,38 @@
+name: Quick Editor Type check / Lint / Build
+
+on:
+  pull_request:
+    paths:
+      - 'web/packages/quick-editor/**'
+
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Type check
+        working-directory: web/packages/quick-editor
+        run: npm run type-check
+
+      - name: Lint
+        working-directory: web/packages/quick-editor
+        run: npm run lint
+
+      - name: Build
+        working-directory: web/packages/quick-editor
+        run: npm run build
