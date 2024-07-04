@@ -8,7 +8,7 @@
 	},
 	"github": {
 		"release": true,
-		"assets": ["release/hovercards.zip"]
+		"assets": [ "release/hovercards.zip" ]
 	},
 	"npm": {
 		"publish": true
