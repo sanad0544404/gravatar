@@ -4,11 +4,13 @@
 		"requireBranch": "trunk",
 		"requireCleanWorkingDir": false,
 		"commitMessage": "chore: release ${name} v${version}",
-		"changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/main/templates/changelog-compact.hbs"
+		"changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/main/templates/changelog-compact.hbs",
+		"tagName": "quick-editor-${version}"
 	},
 	"github": {
 		"release": true,
-		"assets": ["release/quick-editor.zip"]
+		"releaseName": "Release ${name} ${version}",
+		"assets": [ "release/quick-editor.zip" ]
 	},
 	"npm": {
 		"publish": true
