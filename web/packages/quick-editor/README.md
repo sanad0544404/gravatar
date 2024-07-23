@@ -50,6 +50,8 @@ The `GravatarQuickEditor` class simplifies the setup process by automatically se
 #### Example
 
 ```typescript
+import { GravatarQuickEditor } from '@gravatar-com/quick-editor';
+
 document.addEventListener( 'DOMContentLoaded', () => {
   new GravatarQuickEditor( {
     email: 'user@example.com',
