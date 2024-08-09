@@ -5,7 +5,7 @@ export type QuickEditorOptions = {
 	editorTriggerSelector: string;
 	avatarSelector?: string;
 	scope?: Scope;
-	local?: string;
+	locale?: string;
 	avatarRefreshDelay?: number;
 };
 
@@ -18,7 +18,7 @@ export default class GravatarQuickEditor {
 		editorTriggerSelector,
 		avatarSelector,
 		scope,
-		local,
+		locale,
 		avatarRefreshDelay,
 	}: QuickEditorOptions ) {
 		this._avatarList = document.querySelectorAll( avatarSelector );
@@ -28,7 +28,7 @@ export default class GravatarQuickEditor {
 		const quickEditor = new GravatarQuickEditorCore( {
 			email,
 			scope,
-			local,
+			locale,
 			onProfileUpdated: this._onProfileUpdated.bind( this ),
 		} );
 
