@@ -105,7 +105,7 @@ type QuickEditorOptions = {
   editorTriggerSelector: string;
   avatarSelector?: string;
   scope?: Scope;
-  local?: string;
+  locale?: string;
   avatarRefreshDelay?: number;
 };
 ```
@@ -122,7 +122,7 @@ type QuickEditorOptions = {
 - **`scope: Scope`**:
   An array specifying what sections of the profile can be edited in the popup. Check the [list of valid scope values](#valid-scope-values)
 
-- **`local: string`**:
+- **`locale: string`**:
   The locale setting for the Gravatar editor interface. This can be used to set the language for the editor UI.
 
 - **`avatarRefreshDelay: number`**:
@@ -140,13 +140,13 @@ new GravatarQuickEditorCore(options: QuickEditorCoreOptions);
 #### QuickEditorCoreOptions Type
 
 ```typescript
-type QuickEditorCoreOptions = Partial<{
+type QuickEditorCoreOptions = Partial< {
   email: string;
   scope: Scope;
-  local: string;
+  locale: string;
   onProfileUpdated: OnProfileUpdated;
   onOpened: OnOpened;
-}>;
+} >;
 ```
 
 - **`email: string`**:
@@ -155,7 +155,7 @@ type QuickEditorCoreOptions = Partial<{
 - **`scope: Scope`**:
   An array specifying what sections of the profile can be edited in the popup. Check the [list of valid scope values](#valid-scope-values)
 
-- **`local: string`**:
+- **`locale: string`**:
   The locale setting for the Gravatar editor interface. This can be used to set the language for the editor UI.
 
 - **`onProfileUpdated: ( type: ProfileUpdatedType ) => void`**:

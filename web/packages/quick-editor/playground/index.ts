@@ -15,7 +15,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	const quickEditorCore = new GravatarQuickEditorCore( {
 		email: 'joao.heringer@automattic.com',
 		scope: [ 'avatars', 'about' ],
-		local: 'es',
+		locale: 'es',
 		onProfileUpdated: ( type: ProfileUpdatedType ) => {
 			// eslint-disable-next-line
 			console.log( type );

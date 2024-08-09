@@ -24,7 +24,7 @@ export type OnOpened = () => void;
 export type QuickEditorCoreOptions = Partial< {
 	email: string;
 	scope: Scope;
-	local: string;
+	locale: string;
 	onProfileUpdated: OnProfileUpdated;
 	onOpened: OnOpened;
 } >;
@@ -33,15 +33,15 @@ export class GravatarQuickEditorCore {
 	_name: string;
 	_email: string;
 	_scope: Scope;
-	_local: string;
+	_locale: string;
 	_onProfileUpdated: OnProfileUpdated;
 	_onOpened: OnOpened;
 
-	constructor( { email, scope = [], local, onProfileUpdated, onOpened }: QuickEditorCoreOptions ) {
+	constructor( { email, scope = [], locale, onProfileUpdated, onOpened }: QuickEditorCoreOptions ) {
 		this._name = this._getName();
 		this._email = email;
 		this._scope = scope;
-		this._local = local;
+		this._locale = locale;
 		this._onProfileUpdated = onProfileUpdated;
 		this._onOpened = onOpened;
 
@@ -73,7 +73,7 @@ export class GravatarQuickEditorCore {
 		const left = window.screenLeft + ( window.outerWidth - width ) / 2;
 		const top = window.screenTop + ( window.outerHeight - height ) / 2;
 		const options = `popup,width=${ width },height=${ height },top=${ top },left=${ left }`;
-		const host = this._local ? `https://${ this._local }.gravatar.com` : 'https://gravatar.com';
+		const host = this._locale ? `https://${ this._locale }.gravatar.com` : 'https://gravatar.com';
 		const url = `${ host }/profile?email=${ email }&scope=${ scope }&is_quick_editor=true`;
 
 		window.open( url, this._name, options );
