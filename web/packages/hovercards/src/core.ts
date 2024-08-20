@@ -449,7 +449,7 @@ export default class Hovercards {
 						}
 
 						const hovercardInner = Hovercards.createHovercardError(
-							`https://gravatar.com/avatar/${ hash }${ params }`,
+							`https://0.gravatar.com/avatar/${ hash }${ params }`,
 							message,
 							{ additionalClass: this._additionalClass }
 						).firstElementChild;
