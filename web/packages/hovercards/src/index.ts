@@ -2,7 +2,12 @@ export type { Placement } from './compute-position';
 export type {
 	VerifiedAccount,
 	ProfileData,
+	CreateHovercardOptions,
 	CreateHovercard,
+	CreateHovercardSkeletonOptions,
+	CreateHovercardSkeleton,
+	CreateHovercardErrorOptions,
+	CreateHovercardError,
 	Attach,
 	Detach,
 	OnQueryHovercardRef,

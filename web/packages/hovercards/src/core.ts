@@ -19,9 +19,29 @@ export interface ProfileData {
 	verifiedAccounts?: VerifiedAccount[];
 }
 
-export type CreateHovercard = (
-	profileData: ProfileData,
-	options?: { additionalClass?: string; myHash?: string; i18n?: Record< string, string > }
+export interface CreateHovercardOptions {
+	additionalClass?: string;
+	myHash?: string;
+	i18n?: Record< string, string >;
+}
+
+export type CreateHovercard = ( profileData: ProfileData, options?: CreateHovercardOptions ) => HTMLDivElement;
+
+export interface CreateHovercardSkeletonOptions {
+	additionalClass?: string;
+}
+
+export type CreateHovercardSkeleton = ( options?: CreateHovercardSkeletonOptions ) => HTMLDivElement;
+
+export interface CreateHovercardErrorOptions {
+	avatarAlt?: string;
+	additionalClass?: string;
+}
+
+export type CreateHovercardError = (
+	avatarUrl: string,
+	message: string,
+	options?: CreateHovercardErrorOptions
 ) => HTMLDivElement;
 
 export type Attach = ( target: HTMLElement, options?: { dataAttributeName?: string; ignoreSelector?: string } ) => void;
@@ -198,33 +218,6 @@ export default class Hovercards {
 	}
 
 	/**
-	 * Creates a skeleton hovercard element.
-	 *
-	 * @return {HTMLDivElement} The created skeleton hovercard element.
-	 */
-	_createHovercardSkeleton() {
-		const hovercard = dc.createElement( 'div' );
-		hovercard.className = `gravatar-hovercard gravatar-hovercard--skeleton${
-			this._additionalClass ? ` ${ this._additionalClass }` : ''
-		}`;
-
-		hovercard.innerHTML = `
-			<div class="gravatar-hovercard__inner">
-				<div class="gravatar-hovercard__header">
-					<div class="gravatar-hovercard__avatar-link"></div>
-					<div class="gravatar-hovercard__personal-info-link"></div>
-				</div>
-				<div class="gravatar-hovercard__footer">
-					<div class="gravatar-hovercard__social-link"></div>
-					<div class="gravatar-hovercard__profile-link""></div>
-				</div>
-			</div>
-    `;
-
-		return hovercard;
-	}
-
-	/**
 	 * Creates a hovercard element with the provided profile data.
 	 *
 	 * @param {ProfileData} profileData               - The profile data to populate the hovercard.
@@ -306,7 +299,66 @@ export default class Hovercards {
 					</a>
 				</div>
 			</div>
-    `;
+    	`;
+
+		return hovercard;
+	};
+
+	/**
+	 * Creates a skeleton hovercard element.
+	 *
+	 * @param {Object} [options]                 - Optional parameters for the skeleton hovercard.
+	 * @param {string} [options.additionalClass] - Additional CSS class for the skeleton hovercard.
+	 * @return {HTMLDivElement}                  - The created skeleton hovercard element.
+	 */
+	static createHovercardSkeleton: CreateHovercardSkeleton = ( { additionalClass } = {} ) => {
+		const hovercard = dc.createElement( 'div' );
+		hovercard.className = `gravatar-hovercard gravatar-hovercard--skeleton${
+			additionalClass ? ` ${ additionalClass }` : ''
+		}`;
+
+		hovercard.innerHTML = `
+			<div class="gravatar-hovercard__inner">
+				<div class="gravatar-hovercard__header">
+					<div class="gravatar-hovercard__avatar-link"></div>
+					<div class="gravatar-hovercard__personal-info-link"></div>
+				</div>
+				<div class="gravatar-hovercard__footer">
+					<div class="gravatar-hovercard__social-link"></div>
+					<div class="gravatar-hovercard__profile-link""></div>
+				</div>
+			</div>
+    	`;
+
+		return hovercard;
+	};
+
+	/**
+	 * Creates an error hovercard element.
+	 *
+	 * @param {string} avatarUrl                 - The URL of the avatar image.
+	 * @param {string} message                   - The error message to display.
+	 * @param {Object} [options]                 - Optional parameters for the error hovercard.
+	 * @param {string} [options.avatarAlt]       - The alt text for the avatar image.
+	 * @param {string} [options.additionalClass] - Additional CSS class for the error hovercard.
+	 * @return {HTMLDivElement}                  - The created error hovercard element.
+	 */
+	static createHovercardError: CreateHovercardError = (
+		avatarUrl,
+		message,
+		{ avatarAlt = 'Avatar', additionalClass } = {}
+	) => {
+		const hovercard = dc.createElement( 'div' );
+		hovercard.className = `gravatar-hovercard gravatar-hovercard--error${
+			additionalClass ? ` ${ additionalClass }` : ''
+		}`;
+
+		hovercard.innerHTML = `
+			<div class="gravatar-hovercard__inner">
+				<img class="gravatar-hovercard__avatar" src="${ avatarUrl }" width="72" height="72" alt="${ avatarAlt }" />
+				<i class="gravatar-hovercard__error-message">${ message }</i>
+			</div>
+    	`;
 
 		return hovercard;
 	};
@@ -339,7 +391,7 @@ export default class Hovercards {
 					}
 				);
 			} else {
-				hovercard = this._createHovercardSkeleton();
+				hovercard = Hovercards.createHovercardSkeleton( { additionalClass: this._additionalClass } );
 
 				this._onFetchProfileStart( hash );
 
@@ -396,11 +448,15 @@ export default class Hovercards {
 							message = __( this._i18n, 'Internal Server Error.' );
 						}
 
-						hovercard.firstElementChild.classList.add( 'gravatar-hovercard__inner--error' );
-						hovercard.firstElementChild.innerHTML = `
-							<img class="gravatar-hovercard__avatar" src="https://2.gravatar.com/avatar/${ hash }${ params }" width="72" height="72" alt="Avatar" />
-							<i class="gravatar-hovercard__error-message">${ message }</i>
-						`;
+						const hovercardInner = Hovercards.createHovercardError(
+							`https://0.gravatar.com/avatar/${ hash }${ params }`,
+							message,
+							{ additionalClass: this._additionalClass }
+						).firstElementChild;
+
+						hovercard.classList.add( 'gravatar-hovercard--error' );
+						hovercard.classList.remove( 'gravatar-hovercard--skeleton' );
+						hovercard.replaceChildren( hovercardInner );
 
 						this._onFetchProfileFailure( hash, { code, message } );
 					} );

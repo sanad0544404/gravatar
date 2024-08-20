@@ -262,7 +262,7 @@ The `Hovercards` class provides the following methods:
 
 ##### `(static) createHovercard( profileData: ProfileData, options?: { additionalClass?: string; myHash?: string, i18n?: Record< string, string > } ): HTMLDivElement`
 
-This method generates a hovercard element using the provided profile data. It accepts the `profileData` parameter, which represents the data needed to populate the hovercard, and an optional options object that can include properties such as [`additionalClass`](#additionalclass-string) and [`myHash`](#myhash-string). It's useful when you want to display static hovercards on your website.
+This method generates a hovercard element using the provided profile data. It accepts the `profileData` parameter, which represents the data needed to populate the hovercard, and an optional options object that can include properties such as [`additionalClass`](#additionalclass-string), [`myHash`](#myhash-string) and [`i18n`](#i18n-record-string-string-). It's useful when you want to display static hovercards on your website.
 
 ```js
 import { Hovercards } from '@gravatar-com/hovercards';
@@ -285,6 +285,30 @@ const hovercard = Hovercards.createHovercard( {
 } );
 
 document.getElementById( 'container' ).appendChild( hovercard );
+```
+
+##### `(static) createHovercardSkeleton( options?: { additionalClass?: string } ): HTMLDivElement`
+
+This method generates a skeleton hovercard element. It accepts an optional options object that can include the [`additionalClass`](#additionalclass-string) property. It's useful when you want to display a loading state while fetching the Gravatar profile.
+
+```js
+import { Hovercards } from '@gravatar-com/hovercards';
+
+const hovercardSkeleton = Hovercards.createHovercardSkeleton();
+
+document.getElementById( 'container' ).appendChild( hovercardSkeleton );
+```
+
+##### `(static) createHovercardError( avatarUrl: string, message: string, options?: { additionalClass?: string; avatarAlt?: string } ): HTMLDivElement`
+
+This method generates an error hovercard element. It accepts the `avatarUrl` parameter, which represents the URL of the avatar image, the `message` parameter, which represents the error message, and an optional options object that can include properties such as [`additionalClass`](#additionalclass-string) and [`avatarAlt`](#avataralt-string) (default: `'Avatar'`). It's useful when you want to display an error message when fetching the Gravatar profile fails.
+
+```js
+import { Hovercards } from '@gravatar-com/hovercards';
+
+const hovercardError = Hovercards.createHovercardError( 'https://www.gravatar.com/avatar/<HASHED_EMAIL_ADDRESS>', 'Error message' );
+
+document.getElementById( 'container' ).appendChild( hovercardError );
 ```
 
 ##### `attach( target: HTMLElement, options?: { dataAttributeName?: string; ignoreSelector?: string } ): void`
