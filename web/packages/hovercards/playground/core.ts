@@ -32,4 +32,17 @@ addEventListener( 'DOMContentLoaded', () => {
 			description: '<i>Test</i>, &amp;, &lt;, &gt;, &quot;, &#39;, &#x60;',
 		} )
 	);
+
+	// To test hovercard skeleton
+	document.getElementById( 'hovercard-skeleton' )?.appendChild( Hovercards.createHovercardSkeleton() );
+
+	// To test error hovercard
+	document
+		.getElementById( 'hovercard-error' )
+		?.appendChild(
+			Hovercards.createHovercardError(
+				'https://1.gravatar.com/avatar/767fc9c115a1b989744c755db47feb60?d=retro&r=g',
+				'This is a test message'
+			)
+		);
 } );

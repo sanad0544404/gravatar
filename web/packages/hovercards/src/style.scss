@@ -173,8 +173,11 @@ $color-blue: #1d4fc4;
 		height: 16px;
 		width: 96px;
 	}
+}
 
-	.gravatar-hovercard__inner--error {
+.gravatar-hovercard--error {
+
+	.gravatar-hovercard__inner {
 		align-items: center;
 		justify-content: start;
 		gap: 34px;

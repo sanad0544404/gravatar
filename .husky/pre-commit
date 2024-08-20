@@ -1,10 +1,11 @@
 #!/bin/sh
 
+# Exit on any command failure
+set -e
+
 # Find all packages and run lint-staged in each
 for dir in web/packages/*/; do
     if [ -d "$dir" ]; then
-        cd "$dir"
-        npx lint-staged
-        cd - > /dev/null
+        (cd "$dir" && npx lint-staged)
     fi
 done
