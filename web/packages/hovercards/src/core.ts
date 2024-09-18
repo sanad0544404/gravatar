@@ -3,9 +3,9 @@ import computePosition from './compute-position';
 import { escUrl, escHtml } from './sanitizer';
 import __ from './i18n';
 
-type AccountData = Record< 'service_type' | 'service_label' | 'service_icon' | 'url', string >;
+type AccountData = Record< 'service_type' | 'service_label' | 'service_icon' | 'url' | 'is_hidden', string >;
 
-export type VerifiedAccount = Record< 'type' | 'label' | 'icon' | 'url', string >;
+export type VerifiedAccount = Record< 'type' | 'label' | 'icon' | 'url' | 'isHidden', string >;
 
 export interface ProfileData {
 	hash: string;
@@ -248,7 +248,11 @@ export default class Hovercards {
 		const isEditProfile = ! description && myHash === hash;
 		const renderSocialLinks = verifiedAccounts
 			.slice( 0, 3 )
-			.reduce( ( links, { label, icon, url, type } ) => {
+			.reduce( ( links, { label, icon, url, type, isHidden } ) => {
+				if ( isHidden ) {
+					return links;
+				}
+
 				links.push( `
 					<a class="gravatar-hovercard__social-link" href="${ escUrl( url ) }" target="_blank" data-service-name="${ type }">
 						<img class="gravatar-hovercard__social-icon" src="${ escUrl( icon ) }" width="32" height="32" alt="${ escHtml(
@@ -419,6 +423,7 @@ export default class Hovercards {
 								label: account.service_label,
 								icon: account.service_icon,
 								url: account.url,
+								isHidden: account.is_hidden,
 							} ) ),
 						} );
 
