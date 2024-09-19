@@ -3,9 +3,21 @@ import computePosition from './compute-position';
 import { escUrl, escHtml } from './sanitizer';
 import __ from './i18n';
 
-type AccountData = Record< 'service_type' | 'service_label' | 'service_icon' | 'url' | 'is_hidden', string >;
+interface AccountData {
+	service_type: string;
+	service_label: string;
+	service_icon: string;
+	url: string;
+	is_hidden: boolean;
+}
 
-export type VerifiedAccount = Record< 'type' | 'label' | 'icon' | 'url' | 'isHidden', string >;
+export interface VerifiedAccount {
+	type: string;
+	label: string;
+	icon: string;
+	url: string;
+	isHidden: boolean;
+}
 
 export interface ProfileData {
 	hash: string;
