@@ -1,0 +1,47 @@
+{
+	"name": "@gravatar-com/url-utils",
+	"description": "A utility library for generating Gravatar URLs.",
+	"homepage": "https://github.com/Automattic/gravatar/blob/trunk/web/packages/url-utils#readme",
+	"bugs": "https://github.com/Automattic/gravatar/issues",
+	"repository": "https://github.com/Automattic/gravatar/blob/trunk/web/packages/url-utils",
+	"version": "1.0.0",
+	"bin": {
+		"gravatar": "dist/cli.js"
+	},
+	"scripts": {
+		"build": "tsup src/*ts --format cjs,esm,iife --dts",
+		"test": "vitest",
+		"test:watch": "vitest --watch",
+		"format": "wp-scripts format",
+		"lint:js": "wp-scripts lint-js",
+		"lint:md": "wp-scripts lint-md-docs",
+		"lint": "run-p 'lint:*'",
+		"type-check": "tsc --noEmit"
+	},
+	"keywords": [
+		"gravatar",
+		"url",
+		"utils",
+		"avatar"
+	],
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE.md"
+	],
+	"types": "dist/index.d.ts",
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
+	"author": "Automattic Inc.",
+	"license": "GPL-2.0-only",
+	"devDependencies": {
+		"@types/node": "^22.6.1",
+		"lint-staged": "^15.2.10",
+		"tsup": "^8.3.0",
+		"typescript": "^5.1.6",
+		"vitest": "^2.1.1"
+	},
+	"dependencies": {
+		"js-sha256": "^0.11.0"
+	}
+}
