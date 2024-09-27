@@ -2,7 +2,6 @@
 
 A set of utility function to generate Gravatar Avatar or Profile URLs.
 
-
 ## Quickstart
 
 ### Installation
@@ -10,22 +9,82 @@ A set of utility function to generate Gravatar Avatar or Profile URLs.
 Add the package to your project:
 
 ```sh
-npm install @gravatar-com/url-utils
+npm install --save @gravatar-com/url-utils
 ```
 
 ### Usage
 
 ```js
-import { avatarUrl } from '@gravatar-com/url-utils';
+import { avatarUrl, profileUrl } from '@gravatar-com/url-utils';
 
-avatarUrl('gravatar@automattic.com')
-// https://www.gravatar.com/avatar/05bf27a328d0a17f66c91f9b42a4a0185c03152139fc5f0746fc3095d50e6ade
+avatarUrl( 'sara@example.com', { size: 500 } );
+// https://www.gravatar.com/avatar/259b65833bbadfd58ee66dde290489a6e51518339de4886d2331027751f0913a?size=500
 
-avatarUrl('gravatar@automattic.com', {size: 500})
-// https://www.gravatar.com/avatar/05bf27a328d0a17f66c91f9b42a4a0185c03152139fc5f0746fc3095d50e6ade?size=500
+profileUrl( 'sara@example.com' );
+// https://www.gravatar.com/259b65833bbadfd58ee66dde290489a6e51518339de4886d2331027751f0913a
+```
 
-avatarUrl('gravatar@automattic.com', {size: 500, default: "robohash" })
-// https://www.gravatar.com/avatar/05bf27a328d0a17f66c91f9b42a4a0185c03152139fc5f0746fc3095d50e6ade?size=500&default=robohash
+### Documentation
+
+#### `avatarUrl`
+
+Generates a Gravatar avatar URL for the given email.
+
+##### Parameters
+
+-   `email` (string): The email address for which to generate the avatar URL.
+-   `options` (GravatarAvatarOptions): Optional settings for the avatar URL.
+    -   `size` (number): The size of the avatar in pixels.
+    -   `default` (string): The default image to use if no Gravatar is found.
+    -   `rating` (string): The rating of the avatar (e.g., `g`, `pg`, `r`, `x`).
+    -   `forcedefault` (boolean): Force the default image to always load.
+
+##### Returns
+
+-   (string): The generated Gravatar avatar URL.
+
+##### Example
+
+```ts
+avatarUrl( 'sara@example.com' );
+// https://www.gravatar.com/avatar/259b65833bbadfd58ee66dde290489a6e51518339de4886d2331027751f0913a
+
+avatarUrl( 'sara@example.com', { size: 500 } );
+// https://www.gravatar.com/avatar/259b65833bbadfd58ee66dde290489a6e51518339de4886d2331027751f0913a?size=500
+
+avatarUrl( 'sara@example.com', { size: 500, default: GravatarDefault.Robohash } );
+// https://www.gravatar.com/avatar/259b65833bbadfd58ee66dde290489a6e51518339de4886d2331027751f0913a?size=500&default=robohash
+
+avatarUrl( 'sara@example.com', { size: 500, default: 'robohash' } );
+// https://www.gravatar.com/avatar/259b65833bbadfd58ee66dde290489a6e51518339de4886d2331027751f0913a?size=500&default=robohash
+```
+
+#### `profileUrl`
+
+Generates a Gravatar profile URL for the given email.
+
+##### Parameters
+
+-   `email` (string): The email address for which to generate the profile URL.
+-   `format` (GravatarFormat): The format of the profile data. Defaults to `GravatarFormat.HTML`,
+    -   `GravatarFormat.HTML`: Returns the profile in HTML format.
+    -   `GravatarFormat.JSON`: Returns the profile in JSON format.
+    -   `GravatarFormat.XML`: Returns the profile in XML format.
+    -   `GravatarFormat.QR`: Returns the profile as a QR code.
+    -   `GravatarFormat.VCF`: Returns the profile as a VCF file.
+
+##### Returns
+
+-   (string): The generated Gravatar profile URL. HTML returns the link to the user's profile, while JSON, XML, and QR return the profile data in the specified format.
+
+##### Example
+
+```ts
+profileUrl( 'sara@example.com' );
+// https://www.gravatar.com/259b65833bbadfd58ee66dde290489a6e51518339de4886d2331027751f0913a
+
+profileUrl( 'sara@example.com', GravatarFormat.QR );
+// https://www.gravatar.com/259b65833bbadfd58ee66dde290489a6e51518339de4886d2331027751f0913a.qr
 ```
 
 Check out the [unit tests if you want to see more examples](tests/index.test.ts).
@@ -35,23 +94,23 @@ Check out the [unit tests if you want to see more examples](tests/index.test.ts)
 Example use with a React component:
 
 ```js
-import { avatarUrl } from "@gravatar-com/url-utils";
-import PropTypes from "prop-types";
+import { avatarUrl } from '@gravatar-com/url-utils';
+import PropTypes from 'prop-types';
 
-const Gravatar = ({ email, size }) => {
-  return (
-    <img
-      src={avatarUrl(email, size ? { size: size } : null)}
-      alt="User Avatar"
-      width={size}
-      height={size}
-    />
-  );
+const Gravatar = ( { email, size } ) => {
+	return (
+		<img
+			src={ avatarUrl( email, size ? { size: size } : null ) }
+			alt="User Avatar"
+			width={ size }
+			height={ size }
+		/>
+	);
 };
 
 Gravatar.propTypes = {
-  email: PropTypes.string.isRequired,
-  size: PropTypes.number,
+	email: PropTypes.string.isRequired,
+	size: PropTypes.number,
 };
 
 export default Gravatar;
@@ -59,9 +118,8 @@ export default Gravatar;
 
 Use it like this:
 
-```jsx
-<Gravatar email="gravatar@automattic.com" />
-<Gravatar email="gravatar@automattic.com" size={500} />
+```html
+<Gravatar email="sara@example.com" /> <Gravatar email="sara@example.com" size="{500}" />
 ```
 
 ### Methods
@@ -76,11 +134,37 @@ profileUrl(email, format: GravatarFormat)
 
 ## Contribute
 
+Project directory structure:
+
+```sh
+.
+├── LICENSE.md              # GPLv2 license
+├── README.md               # You're here
+├── dist                    # Output files (js and types)
+├── lint-staged.config.js
+├── package.json
+├── src                     # Code
+│   ├── cli.ts              # Very basic cli tool
+│   └── index.ts            # The main library
+├── tests                   # Unit tests, you should proabaly start here
+│   └── index.test.ts
+├── tsconfig.json
+└── vitest.config.ts
+```
 
 ### Build
 
+Build the Javascript files from Typescript:
+
 ```sh
 npm run build
+```
+
+Then you can run the command line tool:
+
+```sh
+npm exec -- gravatar --avatar sara@example.com
+npm exec -- gravatar --profile sara@example.com
 ```
 
 ### Run tests
