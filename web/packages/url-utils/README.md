@@ -85,6 +85,9 @@ profileUrl( 'sara@example.com' );
 
 profileUrl( 'sara@example.com', GravatarFormat.QR );
 // https://www.gravatar.com/259b65833bbadfd58ee66dde290489a6e51518339de4886d2331027751f0913a.qr
+
+profileUrl( 'sara@example.com', "qr");
+// https://www.gravatar.com/259b65833bbadfd58ee66dde290489a6e51518339de4886d2331027751f0913a.qr
 ```
 
 Check out the [unit tests if you want to see more examples](tests/index.test.ts).
