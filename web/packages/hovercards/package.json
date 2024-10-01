@@ -46,7 +46,7 @@
 	},
 	"files": [
 		"dist",
-		"LICENSE.md"
+		"README.md"
 	],
 	"scripts": {
 		"start": "webpack serve --config ./webpack/config.playground.js",
