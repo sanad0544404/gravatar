@@ -96,11 +96,15 @@ Check out the [unit tests if you want to see more examples](tests/index.test.ts)
 
 Example use with a React component:
 
-```js
+```typescript
 import { avatarUrl } from '@gravatar-com/url-utils';
-import PropTypes from 'prop-types';
 
-const Gravatar = ( { email, size } ) => {
+interface GravatarProps {
+	email: string;
+	size?: number;
+}
+
+const Gravatar = ( { email, size }: GravatarProps ) => {
 	return (
 		<img
 			src={ avatarUrl( email, size ? { size: size } : null ) }
@@ -111,18 +115,14 @@ const Gravatar = ( { email, size } ) => {
 	);
 };
 
-Gravatar.propTypes = {
-	email: PropTypes.string.isRequired,
-	size: PropTypes.number,
-};
-
 export default Gravatar;
 ```
 
 Use it like this:
 
 ```html
-<Gravatar email="sara@example.com" /> <Gravatar email="sara@example.com" size="{500}" />
+<Gravatar email="sara@example.com" />
+<Gravatar email="sara@example.com" size="{500}" />
 ```
 
 ### Methods
