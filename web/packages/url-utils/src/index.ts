@@ -50,7 +50,7 @@ function getHash( email: string ): string {
 
 // Function to generate the query string from options
 function getQueryString( options: GravatarAvatarOptions ): string {
-	const params: { [ key: string ]: string } = {};
+	const params: Partial< Record< 'size' | 'default' | 'rating' | 'forcedefault', string > > = {};
 	for ( const key in options ) {
 		if ( key === 'size' ) {
 			params.size = options.size?.toString();
