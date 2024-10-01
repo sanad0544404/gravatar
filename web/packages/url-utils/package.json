@@ -4,7 +4,7 @@
 	"homepage": "https://github.com/Automattic/gravatar/blob/trunk/web/packages/url-utils#readme",
 	"bugs": "https://github.com/Automattic/gravatar/issues",
 	"repository": "https://github.com/Automattic/gravatar/blob/trunk/web/packages/url-utils",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"bin": {
 		"gravatar": "dist/cli.js"
 	},
