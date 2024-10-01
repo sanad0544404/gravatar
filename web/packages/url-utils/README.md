@@ -141,8 +141,7 @@ Project directory structure:
 
 ```sh
 .
-├── LICENSE.md              # GPLv2 license
-├── README.md               # You're here
+├── README.md               # You are here
 ├── dist                    # Output files (js and types)
 ├── lint-staged.config.js
 ├── package.json
@@ -175,3 +174,7 @@ npm exec -- gravatar --profile sara@example.com
 ```sh
 npm run test
 ```
+
+## License
+
+Gravatar Hovercards is licensed under [GNU General Public License v2 (or later)](../../../docs/LICENSE.md).

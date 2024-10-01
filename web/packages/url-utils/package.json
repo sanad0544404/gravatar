@@ -26,14 +26,13 @@
 	],
 	"files": [
 		"dist",
-		"README.md",
-		"LICENSE.md"
+		"README.md"
 	],
 	"types": "dist/index.d.ts",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
 	"author": "Automattic Inc.",
-	"license": "GPL-2.0-only",
+	"license": "GPL-2.0-or-later",
 	"devDependencies": {
 		"@types/node": "^22.6.1",
 		"lint-staged": "^15.2.10",
