@@ -69,6 +69,7 @@ describe( 'avatarUrl function', () => {
 			'https://www.gravatar.com/avatar/31c5543c1734d25c7206f5fd591525d0295bec6fe84ff82f946a34fe970a1e66?default=monsterid'
 		);
 	} );
+	
 	it( 'should add size and default avatar query params when created via an email address', () => {
 		expect(
 			avatarUrl( 'example@example.com', {
