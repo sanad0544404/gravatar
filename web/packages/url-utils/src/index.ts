@@ -53,7 +53,7 @@ function getQueryString( options: GravatarAvatarOptions ): string {
 	const params: { [ key: string ]: string } = {};
 	for ( const key in options ) {
 		if ( key === 'size' ) {
-			params.size = options.size.toString();
+			params.size = options.size?.toString();
 		} else if ( key === 'default' ) {
 			const defaultValue = options.default;
 			params.default = defaultValue;
