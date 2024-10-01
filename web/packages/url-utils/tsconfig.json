@@ -11,7 +11,7 @@
 		"skipLibCheck": true,
 		"stripInternal": true,
 		"outDir": "dist",
-		"types": [ "vitest/globals", "node" ]
+		"types": [ "node" ]
 	},
 	"include": [ "src", "**/*.test.ts" ]
 }

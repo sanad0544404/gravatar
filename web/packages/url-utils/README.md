@@ -150,8 +150,9 @@ Project directory structure:
 │   └── index.ts            # The main library
 ├── tests                   # Unit tests, you should proabaly start here
 │   └── index.test.ts
+├── webpack                 # Webpack config
 ├── tsconfig.json
-└── vitest.config.ts
+└── babel.config.ts
 ```
 
 ### Build

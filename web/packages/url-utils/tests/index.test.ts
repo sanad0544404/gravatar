@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { avatarUrl, GravatarDefault, GravatarFormat, GravatarRating, profileUrl } from '../src/index';
 
 describe( 'avatarUrl function', () => {
@@ -150,12 +150,6 @@ describe( 'profileUrl function', () => {
 
 	it( 'should not add any format if no paramater is passed', () => {
 		expect( profileUrl( 'example@example.com' ) ).toBe(
-			'https://www.gravatar.com/31c5543c1734d25c7206f5fd591525d0295bec6fe84ff82f946a34fe970a1e66'
-		);
-	} );
-
-	it( 'should not add any format if an unknown parameter is passed', () => {
-		expect( profileUrl( 'example@example.com' ), 'nope' ).toBe(
 			'https://www.gravatar.com/31c5543c1734d25c7206f5fd591525d0295bec6fe84ff82f946a34fe970a1e66'
 		);
 	} );

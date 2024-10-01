@@ -5,25 +5,37 @@
 	"bugs": "https://github.com/Automattic/gravatar/issues",
 	"repository": "https://github.com/Automattic/gravatar/blob/trunk/web/packages/url-utils",
 	"version": "0.0.1",
-	"bin": {
-		"gravatar": "dist/cli.js"
-	},
-	"scripts": {
-		"build": "tsup src/*ts --format cjs,esm,iife --dts",
-		"test": "vitest",
-		"test:watch": "vitest --watch",
-		"format": "wp-scripts format",
-		"lint:js": "wp-scripts lint-js",
-		"lint:md": "wp-scripts lint-md-docs",
-		"lint": "run-p 'lint:*'",
-		"type-check": "tsc --noEmit"
-	},
+	"author": "Automattic Inc.",
+	"license": "GPL-2.0-or-later",
 	"keywords": [
 		"gravatar",
 		"url",
 		"utils",
 		"avatar"
 	],
+	"bin": {
+		"gravatar": "dist/cli.js"
+	},
+	"scripts": {
+		"test:unit": "wp-scripts test-unit-js",
+		"test:unit:help": "wp-scripts test-unit-js --help",
+		"test:unit:watch": "wp-scripts test-unit-js --watch",
+		"test:unit:debug": "wp-scripts --inspect-brk test-unit-js --runInBand --no-cache",
+		"format": "wp-scripts format",
+		"lint:js": "wp-scripts lint-js",
+		"lint:md": "wp-scripts lint-md-docs",
+		"lint": "run-p 'lint:*'",
+		"type-check": "tsc --noEmit",
+		"build": "npm run clean:dist && run-p 'build:types' 'build:core'",
+		"build:core": "webpack --config ./webpack/config.core.js --node-env=production",
+		"build:types": "tsc --declaration --declarationMap --emitDeclarationOnly",
+		"build:dev": "npm run clean:dist && run-p 'build:types' 'build:core --node-env=development'",
+		"build:watch": "npm run build:dev && watch 'npm run build:dev' ./src",
+		"clean:dist": "rimraf dist",
+		"clean:release": "rimraf release",
+		"clean": "run-p 'clean:*'",
+		"release": "release-it"
+	},
 	"files": [
 		"dist",
 		"README.md"
@@ -31,16 +43,20 @@
 	"types": "dist/index.d.ts",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
-	"author": "Automattic Inc.",
-	"license": "GPL-2.0-or-later",
 	"devDependencies": {
+		"@jest/globals": "^29.7.0",
 		"@types/node": "^22.6.1",
 		"lint-staged": "^15.2.10",
-		"tsup": "^8.3.0",
+		"release-it": "^17.4.0",
+		"rimraf": "^5.0.1",
 		"typescript": "^5.1.6",
-		"vitest": "^2.1.1"
+		"webpack": "^5.91.0",
+		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
-		"js-sha256": "^0.11.0"
+		"@babel/preset-typescript": "^7.24.7",
+		"js-sha256": "^0.11.0",
+		"terser-webpack-plugin": "^5.3.10",
+		"webpack-remove-empty-scripts": "^1.0.4"
 	}
 }
