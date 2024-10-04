@@ -48,28 +48,61 @@ function getHash( email: string ): string {
 	return sha256( email.trim().toLowerCase() );
 }
 
+// Function to validate the options
+function validateOptions( options: GravatarAvatarOptions ): void {
+	if ( options.size !== undefined ) {
+		if ( typeof options.size !== 'number' || options.size <= 0 ) {
+			throw new Error( "Invalid value for 'size'. It must be a positive number." );
+		}
+	}
+	if ( options.default !== undefined ) {
+		if ( ! Object.values( GravatarDefault ).includes( options.default as GravatarDefault ) ) {
+			try {
+				new URL( options.default );
+			} catch ( _ ) {
+				throw new Error(
+					"Invalid value for 'default'. It must be one of the accepted default image types or a valid URL."
+				);
+			}
+		}
+	}
+	if ( options.rating !== undefined ) {
+		if ( ! Object.values( GravatarRating ).includes( options.rating ) ) {
+			throw new Error( "Invalid value for 'rating'. It must be one of the accepted rating." );
+		}
+	}
+	if ( options.forceDefault !== undefined ) {
+		if ( typeof options.forceDefault !== 'boolean' ) {
+			throw new Error( "Invalid value for 'forceDefault'. It must be a boolean." );
+		}
+	}
+}
+
+// Function to validate the format
+function validateFormat( format: GravatarFormat ): void {
+	if ( ! Object.values( GravatarFormat ).includes( format ) ) {
+		throw new Error( "Invalid value for 'format'. It must be one of the accepted profile formats." );
+	}
+}
+
 // Function to generate the query string from options
 function getQueryString( options: GravatarAvatarOptions ): string {
+	validateOptions( options );
 	const params: Partial< Record< 'size' | 'default' | 'rating' | 'forcedefault', string > > = {};
 	for ( const key in options ) {
 		if ( key === 'size' ) {
-			params.size = options.size?.toString();
+			params.size = options.size.toString();
 		} else if ( key === 'default' ) {
-			const defaultValue = options.default;
-			params.default = defaultValue;
+			params.default = options.default;
 		} else if ( key === 'rating' ) {
-			const ratingValue = options.rating;
-			params.rating = ratingValue;
+			params.rating = options.rating;
 		} else if ( key === 'forceDefault' ) {
 			params.forcedefault = options.forceDefault ? 'y' : 'n';
 		}
 	}
 
-	const queryParams = Object.keys( params )
-		.map( ( key ) => {
-			const value = params[ key ];
-			return encodeURIComponent( key ) + '=' + encodeURIComponent( String( value ) );
-		} )
+	const queryParams = Object.entries( params )
+		.map( ( [ key, value ] ) => `${ encodeURIComponent( key ) }=${ encodeURIComponent( value ) }` )
 		.join( '&' );
 	return queryParams ? `?${ queryParams }` : '';
 }
@@ -77,6 +110,7 @@ function getQueryString( options: GravatarAvatarOptions ): string {
 // Generate the Gravatar image URL using SHA256 hash
 // Documentation: https://docs.gravatar.com/api/avatars/images/
 export function avatarUrl( email: string, options: GravatarAvatarOptions = {} ): string {
+	validateOptions( options );
 	const hash = getHash( email );
 	const query = getQueryString( options );
 	return `${ AVATAR_BASE_URL }${ hash }${ query }`;
@@ -85,6 +119,7 @@ export function avatarUrl( email: string, options: GravatarAvatarOptions = {} ):
 // Generate the Gravatar profile URL using SHA256 hash
 // Documentation: https://docs.gravatar.com/api/profiles/
 export function profileUrl( email: string, format: GravatarFormat = GravatarFormat.HTML ): string {
+	validateFormat( format );
 	const hash = getHash( email );
 	const formatString = format === GravatarFormat.HTML ? '' : `.${ format }`;
 	return `${ PROFILE_BASE_URL }${ hash }${ formatString }`;

@@ -69,7 +69,7 @@ describe( 'avatarUrl function', () => {
 			'https://www.gravatar.com/avatar/31c5543c1734d25c7206f5fd591525d0295bec6fe84ff82f946a34fe970a1e66?default=monsterid'
 		);
 	} );
-	
+
 	it( 'should add size and default avatar query params when created via an email address', () => {
 		expect(
 			avatarUrl( 'example@example.com', {
@@ -125,6 +125,39 @@ describe( 'avatarUrl function', () => {
 		).toBe(
 			'https://www.gravatar.com/avatar/31c5543c1734d25c7206f5fd591525d0295bec6fe84ff82f946a34fe970a1e66?forcedefault=n'
 		);
+	} );
+
+	it( 'should throw an error if an invalid size value is passed', () => {
+		// @ts-ignore: Testing invalid input
+		expect( () => avatarUrl( 'example@example.com', { forceDefault: 't' } ) ).toThrow(
+			"Invalid value for 'forceDefault'. It must be a boolean."
+		);
+	} );
+
+	it( 'should throw an error if an invalid size value is passed', () => {
+		expect( () => avatarUrl( 'example@example.com', { size: -1 } ) ).toThrow(
+			"Invalid value for 'size'. It must be a positive number."
+		);
+	} );
+
+	it( 'should throw an error if an invalid default value is passed', () => {
+		expect( () => avatarUrl( 'example@example.com', { default: 'invalid' as GravatarDefault } ) ).toThrow(
+			"Invalid value for 'default'. It must be one of the accepted default image types or a valid URL."
+		);
+	} );
+
+	it( 'should throw an error if an invalid default value is passed', () => {
+		expect( () => avatarUrl( 'example@example.com', { default: 'invalid' as GravatarDefault } ) ).toThrow(
+			"Invalid value for 'default'. It must be one of the accepted default image types or a valid URL."
+		);
+	} );
+
+	it( 'should throw an error if an invalid default value is passed', () => {
+		expect( () =>
+			avatarUrl( 'example@example.com', {
+				default: '://invalidURL',
+			} )
+		).toThrow( "Invalid value for 'default'. It must be one of the accepted default image types or a valid URL." );
 	} );
 } );
 
@@ -182,6 +215,12 @@ describe( 'profileUrl function', () => {
 	it( 'should add format .qr in case of QR selected', () => {
 		expect( profileUrl( 'example@example.com', GravatarFormat.QR ) ).toBe(
 			'https://www.gravatar.com/31c5543c1734d25c7206f5fd591525d0295bec6fe84ff82f946a34fe970a1e66.qr'
+		);
+	} );
+
+	it( 'should return an error if an invalid format is passed', () => {
+		expect( () => profileUrl( 'example@example.com', 'invalid' as GravatarFormat ) ).toThrow(
+			"Invalid value for 'format'. It must be one of the accepted profile formats."
 		);
 	} );
 } );
