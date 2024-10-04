@@ -4,12 +4,26 @@ A set of utility function to generate Gravatar Avatar or Profile URLs.
 
 ## Quickstart
 
-### Installation
+### Install with npm
 
 Add the package to your project:
 
 ```sh
 npm install --save @gravatar-com/url-utils
+```
+
+### Install with UNPKG
+
+For Vanilla JavaScript, import the library as shown below:
+
+```html
+<!-- Import the url-utils library -->
+<script src="https://unpkg.com/@gravatar-com/url-utils@x.x.x" defer></script>
+
+<script>
+  // The library is accessible as a global variable "GravatarUrlUtils"
+	console.log( GravatarUrlUtils.avatarUrl('example@example.com') );
+</script>
 ```
 
 ### Usage
@@ -122,7 +136,7 @@ Use it like this:
 
 ```html
 <Gravatar email="sara@example.com" />
-<Gravatar email="sara@example.com" size="{500}" />
+<Gravatar email="sara@example.com" size={500} />
 ```
 
 ### Methods
