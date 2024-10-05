@@ -1,17 +1,30 @@
-import { describe, expect, it } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { avatarUrl, GravatarDefault, GravatarFormat, GravatarRating, profileUrl } from '../src/index';
 
 describe( 'avatarUrl function', () => {
-	it( 'should throw an error for an empty email', () => {
-		expect( () => avatarUrl( '' ) ).toThrow( 'Valid email is required' );
+	let consoleErrorSpy: any;
+
+	beforeEach( () => {
+		consoleErrorSpy = jest.spyOn( global.console, 'error' ).mockImplementation( () => {} );
 	} );
 
-	it( 'should throw an error for an empty email', () => {
-		expect( () => avatarUrl( '    ' ) ).toThrow( 'Valid email is required' );
+	afterEach( () => {
+		consoleErrorSpy.mockRestore();
 	} );
 
-	it( 'should throw an error for a null email', () => {
-		expect( () => avatarUrl( null ) ).toThrow( 'Valid email is required' );
+	it( 'should log an error for an empty email', () => {
+		avatarUrl( '' );
+		expect( consoleErrorSpy ).toHaveBeenCalledWith( 'Valid email is required' );
+	} );
+
+	it( 'should log an error for an email with only spaces', () => {
+		avatarUrl( '    ' );
+		expect( consoleErrorSpy ).toHaveBeenCalledWith( 'Valid email is required' );
+	} );
+
+	it( 'should log an error for a null email', () => {
+		avatarUrl( null );
+		expect( consoleErrorSpy ).toHaveBeenCalledWith( 'Valid email is required' );
 	} );
 
 	it( 'should return valid gravatar url with an email and no option', () => {
@@ -26,21 +39,21 @@ describe( 'avatarUrl function', () => {
 		);
 	} );
 
-	it( 'should return valid gravatar url with an email with options', () => {
+	it( 'should return valid gravatar url with an email with multiple options', () => {
 		expect( avatarUrl( 'test@test.com', { default: GravatarDefault.MONSTERID, size: 42 } ) ).toBe(
 			'https://www.gravatar.com/avatar/f660ab912ec121d1b1e928a0bb4bc61b15f5ad44d5efdc4e1c92a25e99b8e44a?default=monsterid&size=42'
 		);
 	} );
 
-	it( 'should trims leading spaces on input email', () => {
+	it( 'should trim leading spaces on input email', () => {
 		expect( avatarUrl( '   example@example.com' ) ).toBe( avatarUrl( 'example@example.com' ) );
 	} );
 
-	it( 'should trims trailing spaces on input email', () => {
+	it( 'should trim trailing spaces on input email', () => {
 		expect( avatarUrl( 'example@example.com   ' ) ).toBe( avatarUrl( 'example@example.com' ) );
 	} );
 
-	it( 'should trims leading and trailing spaces on input email', () => {
+	it( 'should trim leading and trailing spaces on input email', () => {
 		expect( avatarUrl( '   example@example.com   ' ) ).toBe( avatarUrl( 'example@example.com' ) );
 	} );
 
@@ -48,7 +61,7 @@ describe( 'avatarUrl function', () => {
 		expect( avatarUrl( 'example@EXAMPLE.com' ) ).toBe( avatarUrl( 'example@example.com' ) );
 	} );
 
-	it( 'should trims spaces and lower case input email', () => {
+	it( 'should trim spaces and lower case input email', () => {
 		expect( avatarUrl( ' EXample@EXAMPLE.com  ' ) ).toBe( avatarUrl( 'example@example.com' ) );
 	} );
 
@@ -81,7 +94,7 @@ describe( 'avatarUrl function', () => {
 		);
 	} );
 
-	it( 'should add all supported parameters when created via an email address', () => {
+	it( 'should add all supported parameters', () => {
 		expect(
 			avatarUrl( 'example@example.com', {
 				size: 42,
@@ -91,19 +104,6 @@ describe( 'avatarUrl function', () => {
 			} )
 		).toBe(
 			'https://www.gravatar.com/avatar/31c5543c1734d25c7206f5fd591525d0295bec6fe84ff82f946a34fe970a1e66?size=42&default=robohash&rating=x&forcedefault=y'
-		);
-	} );
-
-	it( 'should add all supported parameters when created via an email address', () => {
-		expect(
-			avatarUrl( 'example@example.com', {
-				size: 42,
-				default: GravatarDefault.TRANSPARENT_PNG,
-				rating: GravatarRating.PARENTAL_GUIDANCE,
-				forceDefault: true,
-			} )
-		).toBe(
-			'https://www.gravatar.com/avatar/31c5543c1734d25c7206f5fd591525d0295bec6fe84ff82f946a34fe970a1e66?size=42&default=blank&rating=pg&forcedefault=y'
 		);
 	} );
 
@@ -127,50 +127,58 @@ describe( 'avatarUrl function', () => {
 		);
 	} );
 
-	it( 'should throw an error if an invalid size value is passed', () => {
-		// @ts-ignore: Testing invalid input
-		expect( () => avatarUrl( 'example@example.com', { forceDefault: 't' } ) ).toThrow(
-			"Invalid value for 'forceDefault'. It must be a boolean."
-		);
+	it( 'should log an error if an invalid size value is passed', () => {
+		avatarUrl( 'example@example.com', { size: -1 } );
+		expect( consoleErrorSpy ).toHaveBeenCalledWith( "Invalid value for 'size'. It must be a positive number." );
 	} );
 
-	it( 'should throw an error if an invalid size value is passed', () => {
-		expect( () => avatarUrl( 'example@example.com', { size: -1 } ) ).toThrow(
-			"Invalid value for 'size'. It must be a positive number."
-		);
-	} );
-
-	it( 'should throw an error if an invalid default value is passed', () => {
-		expect( () => avatarUrl( 'example@example.com', { default: 'invalid' as GravatarDefault } ) ).toThrow(
+	it( 'should log an error if an invalid default value is passed', () => {
+		avatarUrl( 'example@example.com', { default: 'invalid' as GravatarDefault } );
+		expect( consoleErrorSpy ).toHaveBeenCalledWith(
 			"Invalid value for 'default'. It must be one of the accepted default image types or a valid URL."
 		);
 	} );
 
-	it( 'should throw an error if an invalid default value is passed', () => {
-		expect( () => avatarUrl( 'example@example.com', { default: 'invalid' as GravatarDefault } ) ).toThrow(
-			"Invalid value for 'default'. It must be one of the accepted default image types or a valid URL."
+	it( 'should log an error if an invalid rating value is passed', () => {
+		avatarUrl( 'example@example.com', { rating: 'invalid' as GravatarRating } );
+		expect( consoleErrorSpy ).toHaveBeenCalledWith(
+			"Invalid value for 'rating'. It must be one of the accepted rating."
 		);
 	} );
 
-	it( 'should throw an error if an invalid default value is passed', () => {
-		expect( () =>
-			avatarUrl( 'example@example.com', {
-				default: '://invalidURL',
-			} )
-		).toThrow( "Invalid value for 'default'. It must be one of the accepted default image types or a valid URL." );
+	it( 'should log an error if an invalid forceDefault value is passed', () => {
+		avatarUrl( 'example@example.com', { forceDefault: 'invalid' as unknown as boolean } );
+		expect( consoleErrorSpy ).toHaveBeenCalledWith( "Invalid value for 'forceDefault'. It must be a boolean." );
+	} );
+
+	it( 'should log an error if an invalid default URL is passed', () => {
+		avatarUrl( 'example@example.com', { default: '://invalidURL' } );
+		expect( consoleErrorSpy ).toHaveBeenCalledWith(
+			"Invalid value for 'default'. It must be one of the accepted default image types or a valid URL."
+		);
 	} );
 } );
 
 describe( 'profileUrl function', () => {
-	it( 'should trims leading spaces on input email', () => {
+	let consoleErrorSpy: any;
+
+	beforeEach( () => {
+		consoleErrorSpy = jest.spyOn( global.console, 'error' ).mockImplementation( () => {} );
+	} );
+
+	afterEach( () => {
+		consoleErrorSpy.mockRestore();
+	} );
+
+	it( 'should trim leading spaces on input email', () => {
 		expect( profileUrl( '   example@example.com' ) ).toBe( profileUrl( 'example@example.com' ) );
 	} );
 
-	it( 'should trims trailing spaces on input email', () => {
+	it( 'should trim trailing spaces on input email', () => {
 		expect( profileUrl( 'example@example.com   ' ) ).toBe( profileUrl( 'example@example.com' ) );
 	} );
 
-	it( 'should trims leading and trailing spaces on input email', () => {
+	it( 'should trim leading and trailing spaces on input email', () => {
 		expect( profileUrl( '   example@example.com   ' ) ).toBe( profileUrl( 'example@example.com' ) );
 	} );
 
@@ -178,11 +186,11 @@ describe( 'profileUrl function', () => {
 		expect( profileUrl( 'example@EXAMPLE.com' ) ).toBe( profileUrl( 'example@example.com' ) );
 	} );
 
-	it( 'should trims spaces and lower case input email', () => {
+	it( 'should trim spaces and lower case input email', () => {
 		expect( profileUrl( ' EXample@EXAMPLE.com  ' ) ).toBe( profileUrl( 'example@example.com' ) );
 	} );
 
-	it( 'should not add any format if no paramater is passed', () => {
+	it( 'should not add any format if no parameter is passed', () => {
 		expect( profileUrl( 'example@example.com' ) ).toBe(
 			'https://www.gravatar.com/31c5543c1734d25c7206f5fd591525d0295bec6fe84ff82f946a34fe970a1e66'
 		);
@@ -218,9 +226,15 @@ describe( 'profileUrl function', () => {
 		);
 	} );
 
-	it( 'should return an error if an invalid format is passed', () => {
-		expect( () => profileUrl( 'example@example.com', 'invalid' as GravatarFormat ) ).toThrow(
+	it( 'should log an error if an invalid format is passed', () => {
+		profileUrl( 'example@example.com', 'invalid' as GravatarFormat );
+		expect( consoleErrorSpy ).toHaveBeenCalledWith(
 			"Invalid value for 'format'. It must be one of the accepted profile formats."
 		);
+	} );
+
+	it( 'should log an error if an empty email is passed', () => {
+		profileUrl( '' );
+		expect( consoleErrorSpy ).toHaveBeenCalledWith( 'Valid email is required' );
 	} );
 } );

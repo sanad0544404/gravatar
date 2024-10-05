@@ -43,7 +43,9 @@ interface GravatarAvatarOptions {
 // Function to get the SHA256 hash of the email
 function getHash( email: string ): string {
 	if ( typeof email !== 'string' || email.trim() === '' ) {
-		throw new Error( 'Valid email is required' );
+		// eslint-disable-next-line no-console
+		console.error( 'Valid email is required' );
+		return '';
 	}
 	return sha256( email.trim().toLowerCase() );
 }
@@ -52,7 +54,8 @@ function getHash( email: string ): string {
 function validateOptions( options: GravatarAvatarOptions ): void {
 	if ( options.size !== undefined ) {
 		if ( typeof options.size !== 'number' || options.size <= 0 ) {
-			throw new Error( "Invalid value for 'size'. It must be a positive number." );
+			// eslint-disable-next-line no-console
+			console.error( "Invalid value for 'size'. It must be a positive number." );
 		}
 	}
 	if ( options.default !== undefined ) {
@@ -60,7 +63,8 @@ function validateOptions( options: GravatarAvatarOptions ): void {
 			try {
 				new URL( options.default );
 			} catch ( _ ) {
-				throw new Error(
+				// eslint-disable-next-line no-console
+				console.error(
 					"Invalid value for 'default'. It must be one of the accepted default image types or a valid URL."
 				);
 			}
@@ -68,12 +72,14 @@ function validateOptions( options: GravatarAvatarOptions ): void {
 	}
 	if ( options.rating !== undefined ) {
 		if ( ! Object.values( GravatarRating ).includes( options.rating ) ) {
-			throw new Error( "Invalid value for 'rating'. It must be one of the accepted rating." );
+			// eslint-disable-next-line no-console
+			console.error( "Invalid value for 'rating'. It must be one of the accepted rating." );
 		}
 	}
 	if ( options.forceDefault !== undefined ) {
 		if ( typeof options.forceDefault !== 'boolean' ) {
-			throw new Error( "Invalid value for 'forceDefault'. It must be a boolean." );
+			// eslint-disable-next-line no-console
+			console.error( "Invalid value for 'forceDefault'. It must be a boolean." );
 		}
 	}
 }
@@ -81,7 +87,8 @@ function validateOptions( options: GravatarAvatarOptions ): void {
 // Function to validate the format
 function validateFormat( format: GravatarFormat ): void {
 	if ( ! Object.values( GravatarFormat ).includes( format ) ) {
-		throw new Error( "Invalid value for 'format'. It must be one of the accepted profile formats." );
+		// eslint-disable-next-line no-console
+		console.error( "Invalid value for 'format'. It must be one of the accepted profile formats." );
 	}
 }
 
