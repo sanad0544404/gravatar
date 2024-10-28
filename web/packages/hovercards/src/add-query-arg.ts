@@ -7,15 +7,10 @@
  * @return {string}      - The updated URL with the new or updated query parameter, or an empty string if the URL is invalid.
  */
 export default function addQueryArg( url: string, key: string, value: string ): string {
-	try {
-		const urlObject = new URL( url );
-		urlObject.searchParams.set( key, value );
+	const [ baseUrl, queryStr ] = url.split( '?' );
+	const queryParams = new URLSearchParams( queryStr || '' );
 
-		return urlObject.toString();
-	} catch ( error ) {
-		// eslint-disable-next-line no-console
-		console.error( `Failed to add query param: "${ key }" to "${ url }".`, error );
+	queryParams.set( key, value );
 
-		return '';
-	}
+	return `${ baseUrl }?${ queryParams.toString() }`;
 }
