@@ -1,6 +1,7 @@
 import type { Placement } from './compute-position';
 import computePosition from './compute-position';
 import { escUrl, escHtml } from './sanitizer';
+import addQueryArg from './add-query-arg';
 import __ from './i18n';
 
 interface AccountData {
@@ -255,7 +256,7 @@ export default class Hovercards {
 		const hovercard = dc.createElement( 'div' );
 		hovercard.className = `gravatar-hovercard${ additionalClass ? ` ${ additionalClass }` : '' }`;
 
-		const trackedProfileUrl = escUrl( `${ profileUrl }?utm_source=hovercard` );
+		const trackedProfileUrl = escUrl( addQueryArg( profileUrl, 'utm_source', 'hovercard' ) );
 		const username = escHtml( displayName );
 		const isEditProfile = ! description && myHash === hash;
 		const renderSocialLinks = verifiedAccounts
@@ -411,7 +412,7 @@ export default class Hovercards {
 
 				this._onFetchProfileStart( hash );
 
-				fetch( `${ BASE_API_URL }/${ hash }?source=hovercard` )
+				fetch( addQueryArg( `${ BASE_API_URL }/${ hash }`, 'source', 'hovercard' ) )
 					.then( ( res ) => {
 						// API error handling
 						if ( res.status !== 200 ) {
@@ -457,12 +458,16 @@ export default class Hovercards {
 					.catch( ( code ) => {
 						let message = __( this._i18n, 'Sorry, we are unable to load this Gravatar profile.' );
 
-						if ( code === 429 ) {
-							message = __( this._i18n, 'Too Many Requests.' );
-						}
-
-						if ( code === 500 ) {
-							message = __( this._i18n, 'Internal Server Error.' );
+						switch ( code ) {
+							case 404:
+								message = __( this._i18n, 'Profile not found.' );
+								break;
+							case 429:
+								message = __( this._i18n, 'Too Many Requests.' );
+								break;
+							case 500:
+								message = __( this._i18n, 'Internal Server Error.' );
+								break;
 						}
 
 						const hovercardInner = Hovercards.createHovercardError(
