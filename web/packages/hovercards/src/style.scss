@@ -4,6 +4,8 @@ $color-super-light-gray: #eee;
 $color-light-gray: #d8dbdd;
 $color-gray: #707070;
 $color-blue: #1d4fc4;
+/* stylelint-disable value-keyword-case */
+$font-sf-pro: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 
 @mixin ellipsis($lineCount: 1) {
 	display: -webkit-box;
@@ -17,6 +19,7 @@ $color-blue: #1d4fc4;
 .gravatar-hovercard {
 	display: inline-block;
 	z-index: 10000000;
+	position: relative;
 
 	h4,
 	p {
@@ -25,18 +28,9 @@ $color-blue: #1d4fc4;
 
 	p,
 	i,
-	a {
-		font-family:
-			"SF Pro Text",
-			-apple-system,
-			BlinkMacSystemFont,
-			"Segoe UI",
-			Roboto,
-			Oxygen-Sans,
-			Ubuntu,
-			Cantarell,
-			"Helvetica Neue",
-			sans-serif;
+	a,
+	span {
+		font-family: $font-sf-pro;
 		font-size: 14px;
 		line-height: 1.5;
 		color: $color-black;
@@ -46,20 +40,36 @@ $color-blue: #1d4fc4;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		width: 400px;
-		height: 213px;
+		width: 336px;
+		height: auto;
+		position: relative;
 		padding: 24px 24px 16px;
 		background-color: $color-white;
 		border: 1px solid $color-light-gray;
 		border-radius: 4px;
 		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 		box-sizing: border-box;
+		overflow: hidden;
+	}
+
+	.gravatar-hovercard__header-image {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		height: 96px;
+		width: 100%;
+		display: block;
+		background-repeat: no-repeat;
+		transform: translateX(-50%);
+		z-index: 0;
 	}
 
 	.gravatar-hovercard__header {
+		position: relative;
 		display: flex;
-		align-items: center;
-		gap: 10px;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
 	}
 
 	.gravatar-hovercard__avatar-link,
@@ -80,10 +90,10 @@ $color-blue: #1d4fc4;
 
 		@include ellipsis(2);
 
-		font-family: Helvetica, Arial, Tahoma, sans-serif;
-		font-size: 18px;
-		font-weight: 600;
-		line-height: 1.25;
+		font-family: $font-sf-pro;
+		font-size: 32px;
+		font-weight: 700;
+		line-height: 38px;
 		color: $color-black;
 	}
 
@@ -97,6 +107,7 @@ $color-blue: #1d4fc4;
 
 	.gravatar-hovercard__body {
 		min-height: 42px;
+		margin-top: 8px;
 	}
 
 	.gravatar-hovercard__description {
@@ -104,16 +115,54 @@ $color-blue: #1d4fc4;
 		@include ellipsis(2);
 	}
 
-	.gravatar-hovercard__footer {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+	.gravatar-hovercard__verified-icon {
+		padding: 4px;
 	}
 
 	.gravatar-hovercard__social-links {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 4px;
+		margin-top: 16px;
+	}
+
+	.gravatar-hovercard__buttons {
+		display: flex;
+		gap: 16px;
+		margin-top: 16px;
+	}
+
+	.gravatar-hovercard__button {
+		width: 100%;
+		min-height: 42px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 8px;
+		background: unset;
+		border-radius: 4px;
+		border: 1px solid rgba($color-blue, 0.3);
+		font-family: $font-sf-pro;
+		font-size: 15px;
+		font-weight: 600;
+		line-height: 21px;
+		color: $color-blue;
+		cursor: pointer;
+
+		&:hover {
+			border: 1px solid rgba($color-blue, 0.6);
+		}
+	}
+
+	.gravatar-hovercard__footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 12px;
+	}
+
+	.gravatar-hovercard__profile-url {
+		color: $color-gray;
 	}
 
 	.gravatar-hovercard__profile-link {
@@ -141,6 +190,14 @@ $color-blue: #1d4fc4;
 			stroke: $color-blue;
 		}
 	}
+
+	.gravatar-hovercard__profile-color {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 4px;
+	}
 }
 
 .gravatar-hovercard--skeleton {
@@ -153,8 +210,8 @@ $color-blue: #1d4fc4;
 	}
 
 	.gravatar-hovercard__avatar-link {
-		width: 72px;
-		height: 72px;
+		width: 104px;
+		height: 104px;
 		border-radius: 50%;
 	}
 
@@ -185,5 +242,131 @@ $color-blue: #1d4fc4;
 
 	.gravatar-hovercard__error-message {
 		color: $color-gray;
+	}
+}
+
+.gravatar-hovercard__drawer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	visibility: hidden;
+	overflow: hidden;
+	z-index: 1;
+
+	.gravatar-hovercard__drawer-backdrop {
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		background-color: rgba($color-black, 0.4);
+		opacity: 0;
+		transition: opacity 0.3s ease-in-out;
+	}
+
+	.gravatar-hovercard__drawer-card {
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		max-height: 100%;
+		display: flex;
+		flex-direction: column;
+		background-color: $color-white;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+		padding: 20px 0;
+		box-sizing: border-box;
+		transform: translateY(100%);
+		transition: transform 0.3s ease-in-out;
+	}
+
+	.gravatar-hovercard__drawer-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0 20px;
+		margin-bottom: 16px;
+	}
+
+	.gravatar-hovercard__drawer-title {
+		font-family: $font-sf-pro;
+		font-size: 18px;
+		font-weight: 700;
+		line-height: 27px;
+		margin: 0;
+	}
+
+	.gravatar-hovercard__drawer-close {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: none;
+		background: none;
+		padding: 0;
+		cursor: pointer;
+	}
+
+	.gravatar-hovercard__drawer-items {
+		display: flex;
+		flex-direction: column;
+		list-style: none;
+		margin: 0;
+		padding: 0 20px;
+		gap: 12px;
+		overflow: auto;
+	}
+
+	.gravatar-hovercard__drawer-item {
+		display: flex;
+		align-items: flex-start;
+		justify-content: flex-start;
+		gap: 8px;
+	}
+
+	.gravatar-hovercard__drawer-item-info {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.gravatar-hovercard__drawer-item-label {
+		font-weight: 600;
+		line-height: 24px;
+		text-transform: capitalize;
+	}
+
+	.gravatar-hovercard__drawer-item-text a {
+		color: $color-blue;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	&--open {
+		visibility: visible;
+
+		.gravatar-hovercard__drawer-backdrop {
+			opacity: 1;
+		}
+
+		.gravatar-hovercard__drawer-card {
+			transform: translateY(0);
+		}
+	}
+
+	&--closing {
+		visibility: visible;
+
+		.gravatar-hovercard__drawer-backdrop {
+			opacity: 0;
+		}
+
+		.gravatar-hovercard__drawer-card {
+			transform: translateY(100%);
+		}
 	}
 }

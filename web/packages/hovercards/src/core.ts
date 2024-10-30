@@ -20,6 +20,20 @@ export interface VerifiedAccount {
 	isHidden: boolean;
 }
 
+export interface ContactInfo {
+	home_phone: string;
+	work_phone: string;
+	cell_phone: string;
+	email: string;
+	contact_form: string;
+	calendar: string;
+}
+
+export interface Payments {
+	links?: { label: string; url: string }[];
+	crypto_wallets?: { label: string; address: string }[];
+}
+
 export interface ProfileData {
 	hash: string;
 	avatarUrl: string;
@@ -29,7 +43,11 @@ export interface ProfileData {
 	description?: string;
 	jobTitle?: string;
 	company?: string;
+	headerImage?: string;
+	backgroundColor?: string;
 	verifiedAccounts?: VerifiedAccount[];
+	contactInfo?: ContactInfo;
+	payments?: Payments;
 }
 
 export interface CreateHovercardOptions {
@@ -250,7 +268,9 @@ export default class Hovercards {
 			description,
 			jobTitle,
 			company,
+			headerImage,
 			verifiedAccounts = [],
+			backgroundColor,
 		} = profileData;
 
 		const hovercard = dc.createElement( 'div' );
@@ -282,9 +302,11 @@ export default class Hovercards {
 
 		hovercard.innerHTML = `
 			<div class="gravatar-hovercard__inner">
+				
+				${ headerImage ? `<span class="gravatar-hovercard__header-image" style="background: ${ headerImage }"></span>` : '' }
 				<div class="gravatar-hovercard__header">
 					<a class="gravatar-hovercard__avatar-link" href="${ trackedProfileUrl }" target="_blank">
-						<img class="gravatar-hovercard__avatar" src="${ escUrl( avatarUrl ) }" width="72" height="72" alt="${ username }" />
+						<img class="gravatar-hovercard__avatar" src="${ escUrl( avatarUrl ) }" width="104" height="104" alt="${ username }" />
 					</a>
 					<a class="gravatar-hovercard__personal-info-link" href="${ trackedProfileUrl }" target="_blank">
 						<h4 class="gravatar-hovercard__name">${ username }</h4>
@@ -295,13 +317,15 @@ export default class Hovercards {
 				<div class="gravatar-hovercard__body">
 					${ description ? `<p class="gravatar-hovercard__description">${ escHtml( description ) }</p>` : '' }
 				</div>
+				<div class="gravatar-hovercard__social-links">
+					<img class="gravatar-hovercard__verified-icon" src="https://secure.gravatar.com/icons/verified.svg" width="24" height="24" title="Verified accounts" alt="Verified icon">
+					<a class="gravatar-hovercard__social-link" href="${ trackedProfileUrl }" target="_blank" data-service-name="gravatar">
+						<img class="gravatar-hovercard__social-icon" src="https://secure.gravatar.com/icons/gravatar.svg" width="32" height="32" alt="Gravatar" />
+					</a>
+					${ renderSocialLinks }
+				</div>
 				<div class="gravatar-hovercard__footer">
-					<div class="gravatar-hovercard__social-links">
-						<a class="gravatar-hovercard__social-link" href="${ trackedProfileUrl }" target="_blank" data-service-name="gravatar">
-							<img class="gravatar-hovercard__social-icon" src="https://secure.gravatar.com/icons/gravatar.svg" width="32" height="32" alt="Gravatar" />
-						</a>
-						${ renderSocialLinks }
-					</div>
+					<span class="gravatar-hovercard__profile-url">${ profileUrl.replace( 'https://', '' ) }</span>
 					<a
 						class="gravatar-hovercard__profile-link${ isEditProfile ? ' gravatar-hovercard__profile-link--edit' : '' }"
 						href="${ isEditProfile ? 'https://gravatar.com/profiles/edit?utm_source=hovercard' : trackedProfileUrl }"
@@ -315,11 +339,230 @@ export default class Hovercards {
 						</svg>
 					</a>
 				</div>
+				${
+					backgroundColor
+						? `<span class="gravatar-hovercard__profile-color" style="background: ${ backgroundColor }"></span>`
+						: ''
+				}
 			</div>
-    	`;
+		`;
+
+		this._handleCtaButtons( hovercard, profileData, i18n );
 
 		return hovercard;
 	};
+
+	/**
+	 * Handles contactInfo and payment data to add the CTA buttons and drawers
+	 *
+	 * @param {HTMLElement} hovercard   - The hovercard DOM element
+	 * @param {ProfileData} profileData - The profile data to populate the hovercard.
+	 * @param {Object}      i18n        - The i18n object.
+	 * @return {void}
+	 * @private
+	 */
+	static _handleCtaButtons( hovercard: HTMLElement, profileData: ProfileData, i18n: {} ): void {
+		let buttonsWrapper;
+		const { contactInfo, payments } = profileData;
+		const hovercardInner = hovercard.querySelector( '.gravatar-hovercard__inner' );
+		const socialLinks = hovercardInner.querySelector( '.gravatar-hovercard__social-links' );
+
+		const createElement = ( element: string, cssClass?: string ): HTMLElement => {
+			const el = dc.createElement( element );
+
+			if ( cssClass ) {
+				el.className = cssClass;
+			}
+
+			return el;
+		};
+
+		const createButton = ( text: string, onClick: () => void ): HTMLElement => {
+			const button = createElement( 'button', 'gravatar-hovercard__button' );
+			button.innerText = text;
+			button.onclick = onClick;
+
+			return button;
+		};
+
+		const createDrawer = (
+			titleText: string,
+			cssClass: string,
+			items: { icon?: string; label: string; value: string; url?: string }[]
+		) => {
+			const drawer = createElement( 'div', 'gravatar-hovercard__drawer' );
+			drawer.classList.add( cssClass );
+			hovercardInner.appendChild( drawer );
+
+			const backdrop = createElement( 'div', 'gravatar-hovercard__drawer-backdrop' );
+			backdrop.onclick = () => closeDrawer( `.${ cssClass }` );
+			drawer.appendChild( backdrop );
+
+			const card = createElement( 'div', 'gravatar-hovercard__drawer-card' );
+			drawer.appendChild( card );
+
+			const header = createElement( 'div', 'gravatar-hovercard__drawer-header' );
+			card.appendChild( header );
+
+			const title = createElement( 'h1', 'gravatar-hovercard__drawer-title' );
+			title.innerText = titleText;
+			header.appendChild( title );
+
+			const closeButton = createElement( 'button', 'gravatar-hovercard__drawer-close' );
+			closeButton.onclick = () => closeDrawer( `.${ cssClass }` );
+			closeButton.innerHTML = `
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M12 13.0607L15.7123 16.773L16.773 15.7123L13.0607 12L16.773 8.28772L15.7123 7.22706L12 10.9394L8.28771 7.22705L7.22705 8.28771L10.9394 12L7.22706 15.7123L8.28772 16.773L12 13.0607Z" fill="#101517"/>
+				</svg>
+			`;
+			header.appendChild( closeButton );
+
+			const ul = createElement( 'ul', 'gravatar-hovercard__drawer-items' );
+			card.appendChild( ul );
+
+			items.forEach( ( item ) => {
+				const el = createElement( 'li', 'gravatar-hovercard__drawer-item' );
+
+				if ( item.icon ) {
+					const icon = createElement( 'img', 'gravatar-hovercard__drawer-item-icon' ) as HTMLImageElement;
+					icon.width = 24;
+					icon.height = 24;
+					icon.src = item.icon;
+					el.appendChild( icon );
+				}
+
+				const info = createElement( 'div', 'gravatar-hovercard__drawer-item-info' );
+				el.appendChild( info );
+
+				const label = createElement( 'span', 'gravatar-hovercard__drawer-item-label' );
+				label.innerText = item.label;
+				info.appendChild( label );
+
+				const text = createElement( 'span', 'gravatar-hovercard__drawer-item-text' );
+				info.appendChild( text );
+
+				if ( item.url ) {
+					const link = createElement( 'a' ) as HTMLAnchorElement;
+					link.href = item.url;
+					link.target = '_blank';
+					link.innerText = item.value;
+					text.appendChild( link );
+				} else {
+					text.innerText = item.value;
+				}
+
+				ul.appendChild( el );
+			} );
+		};
+
+		const openDrawer = ( selector: string ) => {
+			const drawer = hovercardInner.querySelector( selector );
+
+			if ( ! drawer ) {
+				return;
+			}
+
+			drawer.classList.add( 'gravatar-hovercard__drawer--open' );
+		};
+
+		const closeDrawer = ( selector: string ) => {
+			const drawer = hovercardInner.querySelector( selector );
+
+			if ( ! drawer ) {
+				return;
+			}
+
+			drawer.classList.add( 'gravatar-hovercard__drawer--closing' );
+			drawer.classList.remove( 'gravatar-hovercard__drawer--open' );
+
+			setTimeout( () => {
+				drawer.classList.remove( 'gravatar-hovercard__drawer--closing' );
+			}, 300 );
+		};
+
+		const contactsData = Object.entries( contactInfo || {} ).filter( ( [ _, value ] ) => !! value );
+
+		if ( contactsData.length ) {
+			const drawerCssClass = 'gravatar-hovercard__drawer--contact';
+			const icons: { [ key: string ]: string } = {
+				email: 'icons/mail.svg',
+				home_phone: 'icons/home-phone.svg',
+				work_phone: 'icons/work-phone.svg',
+				cell_phone: 'icons/mobile-phone.svg',
+				contact_form: 'icons/envelope.svg',
+				calendar: 'icons/calendar.svg',
+			};
+
+			const getUrl = ( type: string, value: string ) => {
+				switch ( type ) {
+					case 'email':
+						return `mailto:${ value }`;
+					case 'contact_form':
+					case 'calendar':
+						return value.startsWith( 'http' ) ? value : null;
+					default:
+						return null;
+				}
+			};
+
+			const items = contactsData.map( ( [ key, value ]: string[] ) => {
+				return {
+					icon: `https://secure.gravatar.com/${ icons[ key ] }`,
+					label: key.replace( '_', ' ' ),
+					value: value.replace( /^(https?:\/\/)/, '' ),
+					url: getUrl( key, value ),
+				};
+			} );
+
+			createDrawer( __( i18n, 'Contact' ), drawerCssClass, items );
+
+			if ( ! buttonsWrapper ) {
+				buttonsWrapper = createElement( 'div', 'gravatar-hovercard__buttons' );
+				socialLinks.after( buttonsWrapper );
+			}
+
+			const contactButton = createButton( __( i18n, 'Contact' ), () => {
+				openDrawer( `.${ drawerCssClass }` );
+			} );
+
+			buttonsWrapper.appendChild( contactButton );
+		}
+
+		if ( payments?.links?.length || payments?.crypto_wallets?.length ) {
+			const drawerCssClass = 'gravatar-hovercard__drawer--send-money';
+			const iconUrl = 'https://secure.gravatar.com/icons/link.svg';
+
+			const links = payments.links.map( ( item ) => {
+				return {
+					label: item.label,
+					value: item.url.replace( /^(https?:\/\/)/, '' ),
+					url: item.url,
+					icon: iconUrl,
+				};
+			} );
+
+			const crypto = payments.crypto_wallets.map( ( item ) => {
+				return {
+					label: item.label,
+					value: item.address,
+					icon: iconUrl,
+				};
+			} );
+
+			createDrawer( __( i18n, 'Send money' ), drawerCssClass, [ ...links, ...crypto ] );
+
+			if ( ! buttonsWrapper ) {
+				buttonsWrapper = createElement( 'div', 'gravatar-hovercard__buttons' );
+				socialLinks.after( buttonsWrapper );
+			}
+
+			const sendMoneyButton = createButton( __( i18n, 'Send money' ), () => {
+				openDrawer( `.${ drawerCssClass }` );
+			} );
+
+			buttonsWrapper.appendChild( sendMoneyButton );
+		}
+	}
 
 	/**
 	 * Creates a skeleton hovercard element.
@@ -372,7 +615,7 @@ export default class Hovercards {
 
 		hovercard.innerHTML = `
 			<div class="gravatar-hovercard__inner">
-				<img class="gravatar-hovercard__avatar" src="${ avatarUrl }" width="72" height="72" alt="${ avatarAlt }" />
+				<img class="gravatar-hovercard__avatar" src="${ avatarUrl }" width="104" height="104" alt="${ avatarAlt }" />
 				<i class="gravatar-hovercard__error-message">${ message }</i>
 			</div>
     	`;
@@ -392,6 +635,12 @@ export default class Hovercards {
 		const timeoutId = setTimeout( () => {
 			if ( dc.getElementById( id ) ) {
 				return;
+			}
+
+			const urlParams = new URLSearchParams( params );
+			if ( ! urlParams.has( 's' ) ) {
+				urlParams.append( 's', '128' );
+				params = `?${ urlParams.toString() }`;
 			}
 
 			let hovercard: HTMLDivElement;
@@ -431,6 +680,8 @@ export default class Hovercards {
 							description: data.description,
 							jobTitle: data.job_title,
 							company: data.company,
+							headerImage: data.header_image,
+							backgroundColor: data.background_color,
 							verifiedAccounts: data.verified_accounts?.map( ( account: AccountData ) => ( {
 								type: account.service_type,
 								label: account.service_label,
@@ -438,6 +689,8 @@ export default class Hovercards {
 								url: account.url,
 								isHidden: account.is_hidden,
 							} ) ),
+							contactInfo: data.contact_info,
+							payments: data.payments,
 						} );
 
 						const profile = this._cachedProfiles.get( hash );
