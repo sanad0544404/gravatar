@@ -29,9 +29,19 @@ export interface ContactInfo {
 	calendar: string;
 }
 
+export interface PaymentLink {
+	label: string;
+	url: string;
+}
+
+export interface CryptoWallet {
+	label: string;
+	address: string;
+}
+
 export interface Payments {
-	links?: { label: string; url: string }[];
-	crypto_wallets?: { label: string; address: string }[];
+	links?: PaymentLink[];
+	crypto_wallets?: CryptoWallet[];
 }
 
 export interface ProfileData {
@@ -307,8 +317,8 @@ export default class Hovercards {
 		let ctaButtons = '';
 		let contactsDrawer = '';
 		let sendMoneyDrawer = '';
-		const contactsDrawerCssClass = 'gravatar-hovercard__drawer--contact';
-		const sendMoneyDrawerCssClass = 'gravatar-hovercard__drawer--send-money';
+		const contactsDrawerId = 'contact-drawer';
+		const sendMoneyDrawerId = 'send-money-drawer';
 
 		if ( nonEmptyContacts.length || hasPayments ) {
 			if ( nonEmptyContacts.length ) {
@@ -317,8 +327,8 @@ export default class Hovercards {
 				`;
 
 				contactsDrawer = Hovercards._createDrawer(
+					contactsDrawerId,
 					__( i18n, 'Contacts' ),
-					contactsDrawerCssClass,
 					Hovercards._createContactDrawerContent( nonEmptyContacts )
 				);
 			}
@@ -329,8 +339,8 @@ export default class Hovercards {
 				`;
 
 				sendMoneyDrawer = Hovercards._createDrawer(
+					sendMoneyDrawerId,
 					__( i18n, 'Send money' ),
-					sendMoneyDrawerCssClass,
 					Hovercards._createSendMoneyDrawerContent( payments )
 				);
 			}
@@ -373,11 +383,8 @@ export default class Hovercards {
 						target="_blank"
 					>
 						<span class="gravatar-hovercard__profile-link-text">
-							${ isEditProfile ? __( i18n, 'Edit your profile' ) : __( i18n, 'View profile' ) }
+							${ isEditProfile ? __( i18n, 'Edit your profile →' ) : __( i18n, 'View profile →' ) }
 						</span>
-						<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-							<path d="M12.6667 8.33338L9.16666 12.1667M12.6667 8.33338L2.66666 8.33338M12.6667 8.33338L9.16666 4.83338" stroke-width="1.5"/>
-						</svg>
 					</a>
 				</div>
 				${ contactsDrawer }
@@ -392,28 +399,44 @@ export default class Hovercards {
 
 		const hovercardInner = hovercard.querySelector( '.gravatar-hovercard__inner' );
 		hovercardInner.querySelector( '#contact-btn' )?.addEventListener( 'click', () => {
-			Hovercards._openDrawer( `.${ contactsDrawerCssClass }`, hovercardInner );
+			Hovercards._openDrawer( `#${ contactsDrawerId }`, hovercardInner );
 		} );
 
-		hovercardInner.querySelector( `.${ contactsDrawerCssClass } .close-btn` )?.addEventListener( 'click', () => {
-			Hovercards._closeDrawer( `.${ contactsDrawerCssClass }`, hovercardInner );
+		hovercardInner.querySelector( `#${ contactsDrawerId } .close-btn` )?.addEventListener( 'click', () => {
+			Hovercards._closeDrawer( `#${ contactsDrawerId }`, hovercardInner );
+		} );
+
+		hovercardInner.querySelector( `#${ contactsDrawerId } .backdrop` )?.addEventListener( 'click', () => {
+			Hovercards._closeDrawer( `#${ contactsDrawerId }`, hovercardInner );
 		} );
 
 		hovercardInner.querySelector( '#send-money-btn' )?.addEventListener( 'click', () => {
-			Hovercards._openDrawer( `.${ sendMoneyDrawerCssClass }`, hovercardInner );
+			Hovercards._openDrawer( `#${ sendMoneyDrawerId }`, hovercardInner );
 		} );
 
-		hovercardInner.querySelector( `.${ sendMoneyDrawerCssClass } .close-btn` )?.addEventListener( 'click', () => {
-			Hovercards._closeDrawer( `.${ sendMoneyDrawerCssClass }`, hovercardInner );
+		hovercardInner.querySelector( `#${ sendMoneyDrawerId } .close-btn` )?.addEventListener( 'click', () => {
+			Hovercards._closeDrawer( `#${ sendMoneyDrawerId }`, hovercardInner );
+		} );
+
+		hovercardInner.querySelector( `#${ sendMoneyDrawerId } .backdrop` )?.addEventListener( 'click', () => {
+			Hovercards._closeDrawer( `#${ sendMoneyDrawerId }`, hovercardInner );
 		} );
 
 		return hovercard;
 	};
 
-	private static _createDrawer( titleText: string, cssClass: string, content: string ) {
+	/**
+	 * Creates a hovercard drawer.
+	 *
+	 * @param {string} id        - The drawer id
+	 * @param {string} titleText - The title shown at the drawer's header
+	 * @param {string} content   - The drawer inner content
+	 * @return {string}          - The drawer HTML string
+	 */
+	private static _createDrawer( id: string, titleText: string, content: string ): string {
 		return `
-			<div class="gravatar-hovercard__drawer ${ cssClass }">
-				<div class="gravatar-hovercard__drawer-backdrop"></div>
+			<div id="${ id }" class="gravatar-hovercard__drawer">
+				<div class="gravatar-hovercard__drawer-backdrop backdrop"></div>
 				<div class="gravatar-hovercard__drawer-card">
 					<div class="gravatar-hovercard__drawer-header">
 						<h1 class="gravatar-hovercard__drawer-title">${ titleText }</h1>
@@ -431,7 +454,14 @@ export default class Hovercards {
 		`;
 	}
 
-	private static _openDrawer( selector: string, container: Element ) {
+	/**
+	 * Opens a hovercard drawer.
+	 *
+	 * @param {string}  selector  - The drawer selector.
+	 * @param {Element} container - The container context to search for the drawer.
+	 * @return {void}
+	 */
+	private static _openDrawer( selector: string, container: Element ): void {
 		const drawer = container.querySelector( selector );
 
 		if ( ! drawer ) {
@@ -441,7 +471,14 @@ export default class Hovercards {
 		drawer.classList.add( 'gravatar-hovercard__drawer--open' );
 	}
 
-	private static _closeDrawer( selector: string, container: Element ) {
+	/**
+	 * Closes a hovercard drawer.
+	 *
+	 * @param {string}  selector  - The drawer selector.
+	 * @param {Element} container - The container context to search for the drawer.
+	 * @return {void}
+	 */
+	private static _closeDrawer( selector: string, container: Element ): void {
 		const drawer = container.querySelector( selector );
 
 		if ( ! drawer ) {
@@ -456,7 +493,13 @@ export default class Hovercards {
 		}, 300 );
 	}
 
-	private static _createContactDrawerContent( contactsData: Record< string, any >[] ) {
+	/**
+	 * Creates the contact drawer content.
+	 *
+	 * @param {Record< string, any >[]} contactsData - The user's contact data
+	 * @return {string}                              - The contact drawer content
+	 */
+	private static _createContactDrawerContent( contactsData: Record< string, any >[] ): string {
 		const icons: Record< string, string > = {
 			email: 'icons/mail.svg',
 			home_phone: 'icons/home-phone.svg',
@@ -500,7 +543,13 @@ export default class Hovercards {
 		return items.join( '' );
 	}
 
-	private static _createSendMoneyDrawerContent( payments: Payments ) {
+	/**
+	 * Creates the send money drawer content.
+	 *
+	 * @param {Payments} payments - The user's payment data
+	 * @return {string}           - The send money drawer content
+	 */
+	private static _createSendMoneyDrawerContent( payments: Payments ): string {
 		const items: string[] = [];
 
 		payments.links?.forEach( ( item ) => {
