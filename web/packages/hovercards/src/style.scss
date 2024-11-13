@@ -56,7 +56,6 @@ $font-sf-pro: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Robo
 		left: 50%;
 		height: 96px;
 		width: 100%;
-		background-repeat: no-repeat;
 		transform: translateX(-50%);
 	}
 
@@ -154,10 +153,14 @@ $font-sf-pro: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Robo
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		gap: 12px;
 		margin-top: 12px;
 	}
 
 	.gravatar-hovercard__profile-url {
+
+		@include ellipsis(1);
+
 		color: $color-gray;
 	}
 
@@ -166,6 +169,7 @@ $font-sf-pro: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Robo
 		align-items: center;
 		text-decoration: none;
 		gap: 4px;
+		flex-shrink: 0;
 
 		.gravatar-hovercard__profile-link-text {
 			color: $color-gray;

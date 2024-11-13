@@ -21,12 +21,12 @@ export interface VerifiedAccount {
 }
 
 export interface ContactInfo {
-	home_phone: string;
-	work_phone: string;
-	cell_phone: string;
-	email: string;
-	contact_form: string;
-	calendar: string;
+	home_phone?: string;
+	work_phone?: string;
+	cell_phone?: string;
+	email?: string;
+	contact_form?: string;
+	calendar?: string;
 }
 
 export interface PaymentLink {
@@ -64,6 +64,7 @@ export interface CreateHovercardOptions {
 	additionalClass?: string;
 	myHash?: string;
 	i18n?: Record< string, string >;
+	nonce?: string;
 }
 
 export type CreateHovercard = ( profileData: ProfileData, options?: CreateHovercardOptions ) => HTMLDivElement;
@@ -266,9 +267,10 @@ export default class Hovercards {
 	 * @param {string}      [options.additionalClass] - Additional CSS class for the hovercard.
 	 * @param {string}      [options.myHash]          - The hash of the current user.
 	 * @param {Object}      [options.i18n]            - The i18n object.
+	 * @param {string}      [options.nonce]           - The i18n object.
 	 * @return {HTMLDivElement}                       - The created hovercard element.
 	 */
-	static createHovercard: CreateHovercard = ( profileData, { additionalClass, myHash, i18n = {} } = {} ) => {
+	static createHovercard: CreateHovercard = ( profileData, { additionalClass, myHash, i18n = {}, nonce } = {} ) => {
 		const {
 			hash,
 			avatarUrl,
@@ -350,10 +352,27 @@ export default class Hovercards {
 			`;
 		}
 
+		let additionalStyles = '';
+		if ( backgroundColor ) {
+			additionalStyles += `
+				#g-${ hash } .gravatar-hovercard__profile-color {
+					background: ${ backgroundColor };
+				}
+			`;
+		}
+
+		if ( headerImage ) {
+			additionalStyles += `
+				#g-${ hash } .gravatar-hovercard__header-image {
+					background: ${ headerImage };
+				}
+			`;
+		}
+
 		hovercard.innerHTML = `
-			<div class="gravatar-hovercard__inner">
-				
-				${ headerImage ? `<div class="gravatar-hovercard__header-image" style="background: ${ headerImage }"></div>` : '' }
+			${ additionalStyles ? `<style nonce="${ nonce ?? '' }">${ additionalStyles }</style>` : '' }
+			<div id="g-${ hash }" class="gravatar-hovercard__inner">
+				${ headerImage ? `<div class="gravatar-hovercard__header-image"></div>` : '' }
 				<div class="gravatar-hovercard__header">
 					<a class="gravatar-hovercard__avatar-link" href="${ trackedProfileUrl }" target="_blank">
 						<img class="gravatar-hovercard__avatar" src="${ escUrl( avatarUrl ) }" width="104" height="104" alt="${ username }" />
@@ -376,7 +395,7 @@ export default class Hovercards {
 				</div>
 				${ ctaButtons }
 				<div class="gravatar-hovercard__footer">
-					<span class="gravatar-hovercard__profile-url">${ profileUrl.replace( 'https://', '' ) }</span>
+					<span class="gravatar-hovercard__profile-url" title="${ profileUrl }">${ profileUrl.replace( 'https://', '' ) }</span>
 					<a
 						class="gravatar-hovercard__profile-link${ isEditProfile ? ' gravatar-hovercard__profile-link--edit' : '' }"
 						href="${ isEditProfile ? 'https://gravatar.com/profiles/edit?utm_source=hovercard' : trackedProfileUrl }"
@@ -389,11 +408,7 @@ export default class Hovercards {
 				</div>
 				${ contactsDrawer }
 				${ sendMoneyDrawer }
-				${
-					backgroundColor
-						? `<div class="gravatar-hovercard__profile-color" style="background: ${ backgroundColor }"></div>`
-						: ''
-				}
+				${ backgroundColor ? '<div class="gravatar-hovercard__profile-color"></div>' : '' }
 			</div>
 		`;
 
