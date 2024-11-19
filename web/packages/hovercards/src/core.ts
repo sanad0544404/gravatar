@@ -64,7 +64,6 @@ export interface CreateHovercardOptions {
 	additionalClass?: string;
 	myHash?: string;
 	i18n?: Record< string, string >;
-	nonce?: string;
 }
 
 export type CreateHovercard = ( profileData: ProfileData, options?: CreateHovercardOptions ) => HTMLDivElement;
@@ -267,10 +266,9 @@ export default class Hovercards {
 	 * @param {string}      [options.additionalClass] - Additional CSS class for the hovercard.
 	 * @param {string}      [options.myHash]          - The hash of the current user.
 	 * @param {Object}      [options.i18n]            - The i18n object.
-	 * @param {string}      [options.nonce]           - The i18n object.
 	 * @return {HTMLDivElement}                       - The created hovercard element.
 	 */
-	static createHovercard: CreateHovercard = ( profileData, { additionalClass, myHash, i18n = {}, nonce } = {} ) => {
+	static createHovercard: CreateHovercard = ( profileData, { additionalClass, myHash, i18n = {} } = {} ) => {
 		const {
 			hash,
 			avatarUrl,
@@ -352,25 +350,7 @@ export default class Hovercards {
 			`;
 		}
 
-		let additionalStyles = '';
-		if ( backgroundColor ) {
-			additionalStyles += `
-				#g-${ hash } .gravatar-hovercard__profile-color {
-					background: ${ backgroundColor };
-				}
-			`;
-		}
-
-		if ( headerImage ) {
-			additionalStyles += `
-				#g-${ hash } .gravatar-hovercard__header-image {
-					background: ${ headerImage };
-				}
-			`;
-		}
-
 		hovercard.innerHTML = `
-			${ additionalStyles ? `<style nonce="${ nonce ?? '' }">${ additionalStyles }</style>` : '' }
 			<div id="g-${ hash }" class="gravatar-hovercard__inner">
 				${ headerImage ? `<div class="gravatar-hovercard__header-image"></div>` : '' }
 				<div class="gravatar-hovercard__header">
@@ -413,6 +393,17 @@ export default class Hovercards {
 		`;
 
 		const hovercardInner = hovercard.querySelector( '.gravatar-hovercard__inner' );
+		const headerImageEl = hovercardInner.querySelector< HTMLElement >( '.gravatar-hovercard__header-image' );
+		const profileColorEl = hovercardInner.querySelector< HTMLElement >( '.gravatar-hovercard__profile-color' );
+
+		if ( headerImage && headerImageEl ) {
+			headerImageEl.style.background = headerImage;
+		}
+
+		if ( backgroundColor && profileColorEl ) {
+			profileColorEl.style.background = backgroundColor;
+		}
+
 		hovercardInner.querySelector( '#contact-btn' )?.addEventListener( 'click', () => {
 			Hovercards._openDrawer( `#${ contactsDrawerId }`, hovercardInner );
 		} );
@@ -775,9 +766,6 @@ export default class Hovercards {
 			hovercard.addEventListener( 'mouseenter', () => clearInterval( this._hideHovercardTimeoutIds.get( id ) ) );
 			hovercard.addEventListener( 'mouseleave', () => this._hideHovercard( id ) );
 
-			// Placing the hovercard at the top-level of the dc to avoid being clipped by overflow
-			dc.body.appendChild( hovercard );
-
 			const { x, y, padding, paddingValue } = computePosition( ref, hovercard, {
 				placement: this._placement,
 				offset: this._offset,
@@ -790,6 +778,9 @@ export default class Hovercards {
 			// To bridge the gap between the ref and the hovercard,
 			// ensuring that the hovercard remains visible when the mouse hovers over the gap
 			hovercard.style[ padding ] = `${ paddingValue }px`;
+
+			// Placing the hovercard at the top-level of the dc to avoid being clipped by overflow
+			dc.body.appendChild( hovercard );
 
 			this._onHovercardShown( hash, hovercard );
 		}, this._delayToShow );
