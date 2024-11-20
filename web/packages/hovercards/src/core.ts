@@ -20,14 +20,14 @@ export interface VerifiedAccount {
 	isHidden: boolean;
 }
 
-export interface ContactInfo {
-	home_phone?: string;
-	work_phone?: string;
-	cell_phone?: string;
-	email?: string;
-	contact_form?: string;
-	calendar?: string;
-}
+export type ContactInfo = Partial< {
+	home_phone: string;
+	work_phone: string;
+	cell_phone: string;
+	email: string;
+	contact_form: string;
+	calendar: string;
+} >;
 
 export interface PaymentLink {
 	label: string;
@@ -381,9 +381,7 @@ export default class Hovercards {
 						href="${ isEditProfile ? 'https://gravatar.com/profiles/edit?utm_source=hovercard' : trackedProfileUrl }"
 						target="_blank"
 					>
-						<span class="gravatar-hovercard__profile-link-text">
-							${ isEditProfile ? __( i18n, 'Edit your profile →' ) : __( i18n, 'View profile →' ) }
-						</span>
+						${ isEditProfile ? __( i18n, 'Edit your profile →' ) : __( i18n, 'View profile →' ) }
 					</a>
 				</div>
 				${ contactsDrawer }
@@ -392,9 +390,9 @@ export default class Hovercards {
 			</div>
 		`;
 
-		const hovercardInner = hovercard.querySelector( '.gravatar-hovercard__inner' );
-		const headerImageEl = hovercardInner.querySelector< HTMLElement >( '.gravatar-hovercard__header-image' );
-		const profileColorEl = hovercardInner.querySelector< HTMLElement >( '.gravatar-hovercard__profile-color' );
+		const hovercardInner = hovercard.querySelector< HTMLElement >( '.gravatar-hovercard__inner' );
+		const headerImageEl = hovercardInner.querySelector< HTMLDivElement >( '.gravatar-hovercard__header-image' );
+		const profileColorEl = hovercardInner.querySelector< HTMLDivElement >( '.gravatar-hovercard__profile-color' );
 
 		if ( headerImage && headerImageEl ) {
 			headerImageEl.style.background = headerImage;
@@ -434,10 +432,10 @@ export default class Hovercards {
 	/**
 	 * Creates a hovercard drawer.
 	 *
-	 * @param {string} id        - The drawer id
-	 * @param {string} titleText - The title shown at the drawer's header
-	 * @param {string} content   - The drawer inner content
-	 * @return {string}          - The drawer HTML string
+	 * @param {string} id        - The drawer id.
+	 * @param {string} titleText - The title shown at the drawer's header.
+	 * @param {string} content   - The drawer inner content.
+	 * @return {string}          - The drawer HTML string.
 	 */
 	private static _createDrawer( id: string, titleText: string, content: string ): string {
 		return `
@@ -445,7 +443,7 @@ export default class Hovercards {
 				<div class="gravatar-hovercard__drawer-backdrop backdrop"></div>
 				<div class="gravatar-hovercard__drawer-card">
 					<div class="gravatar-hovercard__drawer-header">
-						<h1 class="gravatar-hovercard__drawer-title">${ titleText }</h1>
+						<h2 class="gravatar-hovercard__drawer-title">${ titleText }</h2>
 						<button class="gravatar-hovercard__drawer-close close-btn">
 							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M12 13.0607L15.7123 16.773L16.773 15.7123L13.0607 12L16.773 8.28772L15.7123 7.22706L12 10.9394L8.28771 7.22705L7.22705 8.28771L10.9394 12L7.22706 15.7123L8.28772 16.773L12 13.0607Z" fill="#101517"></path>
@@ -467,7 +465,7 @@ export default class Hovercards {
 	 * @param {Element} container - The container context to search for the drawer.
 	 * @return {void}
 	 */
-	private static _openDrawer( selector: string, container: Element ): void {
+	private static _openDrawer( selector: string, container: HTMLElement ): void {
 		const drawer = container.querySelector( selector );
 
 		if ( ! drawer ) {
@@ -502,8 +500,8 @@ export default class Hovercards {
 	/**
 	 * Creates the contact drawer content.
 	 *
-	 * @param {Record< string, any >[]} contactsData - The user's contact data
-	 * @return {string}                              - The contact drawer content
+	 * @param {Record< string, any >[]} contactsData - The user's contact data.
+	 * @return {string}                              - The contact drawer content.
 	 */
 	private static _createContactDrawerContent( contactsData: Record< string, any >[] ): string {
 		const icons: Record< string, string > = {
@@ -521,7 +519,7 @@ export default class Hovercards {
 					return `mailto:${ value }`;
 				case 'contact_form':
 				case 'calendar':
-					return value.startsWith( 'http' ) ? value : null;
+					return value.startsWith( 'http' ) ? value : `https://${ value }`;
 				default:
 					return null;
 			}
@@ -530,9 +528,11 @@ export default class Hovercards {
 		const items = contactsData.map( ( [ key, value ]: string[] ) => {
 			const url = getUrl( key, value );
 			let text = value.replace( /^(https?:\/\/)/, '' );
+			text = text.replace( /^(www\.)/, '' );
+			text = text.endsWith( '/' ) ? text.slice( 0, -1 ) : text;
 
 			if ( url ) {
-				text = `<a href="${ url }" target="_blank">${ text }</a>`;
+				text = `<a class="gravatar-hovercard__drawer-item-link" href="${ url }" target="_blank">${ text }</a>`;
 			}
 
 			return `
@@ -552,8 +552,8 @@ export default class Hovercards {
 	/**
 	 * Creates the send money drawer content.
 	 *
-	 * @param {Payments} payments - The user's payment data
-	 * @return {string}           - The send money drawer content
+	 * @param {Payments} payments - The user's payment data.
+	 * @return {string}           - The send money drawer content.
 	 */
 	private static _createSendMoneyDrawerContent( payments: Payments ): string {
 		const items: string[] = [];
@@ -565,7 +565,9 @@ export default class Hovercards {
 					<div class="gravatar-hovercard__drawer-item-info">
 						<span class="gravatar-hovercard__drawer-item-label">${ item.label }</span>
 						<span class="gravatar-hovercard__drawer-item-text">
-							<a href="${ item.url }" target="_blank">${ item.url.replace( /^(https?:\/\/)/, '' ) }</a>
+							<a class="gravatar-hovercard__drawer-item-link" href="${ item.url }" target="_blank">
+								${ item.url.replace( /^(https?:\/\/)/, '' ) }
+							</a>
 						</span>
 					</div>
 				</li>

@@ -4,7 +4,7 @@ $color-super-light-gray: #eee;
 $color-light-gray: #d8dbdd;
 $color-gray: #707070;
 $color-blue: #1d4fc4;
-/* stylelint-disable value-keyword-case */
+/* stylelint-disable-next-line value-keyword-case */
 $font-sf-pro: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 
 @mixin ellipsis($lineCount: 1) {
@@ -60,10 +60,9 @@ $font-sf-pro: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Robo
 	}
 
 	.gravatar-hovercard__header {
-		position: relative;
+		z-index: 1;
 		display: flex;
 		flex-direction: column;
-		align-items: flex-start;
 		gap: 8px;
 	}
 
@@ -165,30 +164,9 @@ $font-sf-pro: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Robo
 	}
 
 	.gravatar-hovercard__profile-link {
-		display: flex;
-		align-items: center;
 		text-decoration: none;
-		gap: 4px;
 		flex-shrink: 0;
-
-		.gravatar-hovercard__profile-link-text {
-			color: $color-gray;
-		}
-
-		path {
-			stroke: $color-gray;
-		}
-	}
-
-	.gravatar-hovercard__profile-link--edit {
-
-		.gravatar-hovercard__profile-link-text {
-			color: $color-blue;
-		}
-
-		path {
-			stroke: $color-blue;
-		}
+		color: $color-gray;
 	}
 
 	.gravatar-hovercard__profile-color {
@@ -337,7 +315,7 @@ $font-sf-pro: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Robo
 		text-transform: capitalize;
 	}
 
-	.gravatar-hovercard__drawer-item-text a {
+	.gravatar-hovercard__drawer-item-link {
 		color: $color-blue;
 		text-decoration: none;
 

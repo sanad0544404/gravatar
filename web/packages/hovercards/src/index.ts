@@ -3,6 +3,8 @@ export type {
 	VerifiedAccount,
 	ContactInfo,
 	Payments,
+	PaymentLink,
+	CryptoWallet,
 	ProfileData,
 	CreateHovercardOptions,
 	CreateHovercard,
