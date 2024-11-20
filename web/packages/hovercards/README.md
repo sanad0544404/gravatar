@@ -231,7 +231,11 @@ interface ProfileData {
     description?: string;
     jobTitle?: string;
     company?: string;
+    headerImage?: string;
+    backgroundColor?: string;
     verifiedAccounts?: Record< 'label' | 'icon' | 'url' | 'type', string >[];
+    contactInfo?: ContactInfo;
+    payments?: Payments;
 }
 ```
 
@@ -489,8 +493,8 @@ A few items of text are used when displaying a hovercard. The library contains E
 
 The following phrases are used:
 
-- `Edit your profile`
-- `View profile`
+- `Edit your profile →`
+- `View profile →`
 - `Sorry, we are unable to load this Gravatar profile.`
 - `Profile not found.`
 - `Too Many Requests.`
@@ -500,7 +504,7 @@ The `i18n` option is an object that maps from the English text to the language o
 
 ```js
 {
-  'Edit your profile': 'Modifier votre profil'
+  'Edit your profile →': 'Modifier votre profil →'
 }
 ```
 
