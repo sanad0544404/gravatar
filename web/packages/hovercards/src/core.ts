@@ -608,9 +608,14 @@ export default class Hovercards {
 					<div class="gravatar-hovercard__avatar-link"></div>
 					<div class="gravatar-hovercard__personal-info-link"></div>
 				</div>
-				<div class="gravatar-hovercard__footer">
+				<div class="gravatar-hovercard__body"></div>
+				<div class="gravatar-hovercard__social-links">
 					<div class="gravatar-hovercard__social-link"></div>
-					<div class="gravatar-hovercard__profile-link""></div>
+					<div class="gravatar-hovercard__social-link"></div>
+				</div>
+				<div class="gravatar-hovercard__footer">
+					<div class="gravatar-hovercard__profile-url"></div>
+					<div class="gravatar-hovercard__profile-link"></div>
 				</div>
 			</div>
     	`;
@@ -768,6 +773,9 @@ export default class Hovercards {
 			hovercard.addEventListener( 'mouseenter', () => clearInterval( this._hideHovercardTimeoutIds.get( id ) ) );
 			hovercard.addEventListener( 'mouseleave', () => this._hideHovercard( id ) );
 
+			// Placing the hovercard at the top-level of the dc to avoid being clipped by overflow
+			dc.body.appendChild( hovercard );
+
 			const { x, y, padding, paddingValue } = computePosition( ref, hovercard, {
 				placement: this._placement,
 				offset: this._offset,
@@ -780,9 +788,6 @@ export default class Hovercards {
 			// To bridge the gap between the ref and the hovercard,
 			// ensuring that the hovercard remains visible when the mouse hovers over the gap
 			hovercard.style[ padding ] = `${ paddingValue }px`;
-
-			// Placing the hovercard at the top-level of the dc to avoid being clipped by overflow
-			dc.body.appendChild( hovercard );
 
 			this._onHovercardShown( hash, hovercard );
 		}, this._delayToShow );
