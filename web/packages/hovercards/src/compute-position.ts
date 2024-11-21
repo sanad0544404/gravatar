@@ -31,7 +31,7 @@ const paddingMap: Record< string, 'paddingBottom' | 'paddingTop' | 'paddingRight
  * @param {HTMLElement}    ref          - The ref element.
  * @param {HTMLDivElement} card         - The card element.
  * @param {Options}        [options={}] - The placement, offset, and auto-flip options.
- * @return {void}               - The computed position values.
+ * @return {void}
  */
 export default function computingPosition(
 	ref: HTMLElement,
