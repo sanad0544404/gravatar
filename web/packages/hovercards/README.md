@@ -495,6 +495,8 @@ The following phrases are used:
 
 - `Edit your profile →`
 - `View profile →`
+- `Contact`
+- `Send money`
 - `Sorry, we are unable to load this Gravatar profile.`
 - `Profile not found.`
 - `Too Many Requests.`

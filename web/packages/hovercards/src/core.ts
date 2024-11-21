@@ -317,29 +317,27 @@ export default class Hovercards {
 		let ctaButtons = '';
 		let contactsDrawer = '';
 		let sendMoneyDrawer = '';
-		const contactsDrawerId = 'contact-drawer';
-		const sendMoneyDrawerId = 'send-money-drawer';
 
 		if ( nonEmptyContacts.length || hasPayments ) {
 			if ( nonEmptyContacts.length ) {
 				ctaButtons += `
-					<button id="contact-btn" class="gravatar-hovercard__button">${ __( i18n, 'Contact' ) }</button>
+					<button class="gravatar-hovercard__button" data-target-drawer="contact">${ __( i18n, 'Contact' ) }</button>
 				`;
 
 				contactsDrawer = Hovercards._createDrawer(
-					contactsDrawerId,
-					__( i18n, 'Contacts' ),
+					'contact',
+					__( i18n, 'Contact' ),
 					Hovercards._createContactDrawerContent( nonEmptyContacts )
 				);
 			}
 
 			if ( hasPayments ) {
 				ctaButtons += `
-					<button id="send-money-btn" class="gravatar-hovercard__button">${ __( i18n, 'Send money' ) }</button>
+					<button class="gravatar-hovercard__button" data-target-drawer="send-money">${ __( i18n, 'Send money' ) }</button>
 				`;
 
 				sendMoneyDrawer = Hovercards._createDrawer(
-					sendMoneyDrawerId,
+					'send-money',
 					__( i18n, 'Send money' ),
 					Hovercards._createSendMoneyDrawerContent( payments )
 				);
@@ -351,7 +349,7 @@ export default class Hovercards {
 		}
 
 		hovercard.innerHTML = `
-			<div id="g-${ hash }" class="gravatar-hovercard__inner">
+			<div class="gravatar-hovercard__inner">
 				${ headerImage ? `<div class="gravatar-hovercard__header-image"></div>` : '' }
 				<div class="gravatar-hovercard__header">
 					<a class="gravatar-hovercard__avatar-link" href="${ trackedProfileUrl }" target="_blank">
@@ -402,28 +400,14 @@ export default class Hovercards {
 			profileColorEl.style.background = backgroundColor;
 		}
 
-		hovercardInner.querySelector( '#contact-btn' )?.addEventListener( 'click', () => {
-			Hovercards._openDrawer( `#${ contactsDrawerId }`, hovercardInner );
+		hovercardInner.querySelectorAll( '.gravatar-hovercard__button' ).forEach( ( el: HTMLButtonElement ) => {
+			el.addEventListener( 'click', () => Hovercards._openDrawer( el, hovercardInner ) );
 		} );
-
-		hovercardInner.querySelector( `#${ contactsDrawerId } .close-btn` )?.addEventListener( 'click', () => {
-			Hovercards._closeDrawer( `#${ contactsDrawerId }`, hovercardInner );
+		hovercardInner.querySelectorAll( '.gravatar-hovercard__drawer-close' ).forEach( ( el: HTMLButtonElement ) => {
+			el.addEventListener( 'click', () => Hovercards._closeDrawer( el, hovercardInner ) );
 		} );
-
-		hovercardInner.querySelector( `#${ contactsDrawerId } .backdrop` )?.addEventListener( 'click', () => {
-			Hovercards._closeDrawer( `#${ contactsDrawerId }`, hovercardInner );
-		} );
-
-		hovercardInner.querySelector( '#send-money-btn' )?.addEventListener( 'click', () => {
-			Hovercards._openDrawer( `#${ sendMoneyDrawerId }`, hovercardInner );
-		} );
-
-		hovercardInner.querySelector( `#${ sendMoneyDrawerId } .close-btn` )?.addEventListener( 'click', () => {
-			Hovercards._closeDrawer( `#${ sendMoneyDrawerId }`, hovercardInner );
-		} );
-
-		hovercardInner.querySelector( `#${ sendMoneyDrawerId } .backdrop` )?.addEventListener( 'click', () => {
-			Hovercards._closeDrawer( `#${ sendMoneyDrawerId }`, hovercardInner );
+		hovercardInner.querySelectorAll( '.gravatar-hovercard__drawer-backdrop' ).forEach( ( el: HTMLDivElement ) => {
+			el.addEventListener( 'click', () => Hovercards._closeDrawer( el, hovercardInner ) );
 		} );
 
 		return hovercard;
@@ -432,19 +416,19 @@ export default class Hovercards {
 	/**
 	 * Creates a hovercard drawer.
 	 *
-	 * @param {string} id        - The drawer id.
+	 * @param {string} name      - The drawer name.
 	 * @param {string} titleText - The title shown at the drawer's header.
 	 * @param {string} content   - The drawer inner content.
 	 * @return {string}          - The drawer HTML string.
 	 */
-	private static _createDrawer( id: string, titleText: string, content: string ): string {
+	private static _createDrawer( name: string, titleText: string, content: string ): string {
 		return `
-			<div id="${ id }" class="gravatar-hovercard__drawer">
-				<div class="gravatar-hovercard__drawer-backdrop backdrop"></div>
+			<div class="gravatar-hovercard__drawer" data-drawer-name="${ name }">
+				<div class="gravatar-hovercard__drawer-backdrop" data-target-drawer="${ name }"></div>
 				<div class="gravatar-hovercard__drawer-card">
 					<div class="gravatar-hovercard__drawer-header">
 						<h2 class="gravatar-hovercard__drawer-title">${ titleText }</h2>
-						<button class="gravatar-hovercard__drawer-close close-btn">
+						<button class="gravatar-hovercard__drawer-close" data-target-drawer="${ name }">
 							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M12 13.0607L15.7123 16.773L16.773 15.7123L13.0607 12L16.773 8.28772L15.7123 7.22706L12 10.9394L8.28771 7.22705L7.22705 8.28771L10.9394 12L7.22706 15.7123L8.28772 16.773L12 13.0607Z" fill="#101517"></path>
 							</svg>
@@ -461,12 +445,14 @@ export default class Hovercards {
 	/**
 	 * Opens a hovercard drawer.
 	 *
-	 * @param {string}  selector  - The drawer selector.
-	 * @param {Element} container - The container context to search for the drawer.
+	 * @param {HTMLElement} target    - The target drawer.
+	 * @param {HTMLElement} container - The container context to search for the drawer.
 	 * @return {void}
 	 */
-	private static _openDrawer( selector: string, container: HTMLElement ): void {
-		const drawer = container.querySelector( selector );
+	private static _openDrawer( target: HTMLElement, container: HTMLElement ): void {
+		const drawer = container.querySelector(
+			`.gravatar-hovercard__drawer[data-drawer-name="${ target.dataset.targetDrawer }"]`
+		);
 
 		if ( ! drawer ) {
 			return;
@@ -478,12 +464,14 @@ export default class Hovercards {
 	/**
 	 * Closes a hovercard drawer.
 	 *
-	 * @param {string}  selector  - The drawer selector.
-	 * @param {Element} container - The container context to search for the drawer.
+	 * @param {HTMLElement} target    - The drawer selector.
+	 * @param {HTMLElement} container - The container context to search for the drawer.
 	 * @return {void}
 	 */
-	private static _closeDrawer( selector: string, container: Element ): void {
-		const drawer = container.querySelector( selector );
+	private static _closeDrawer( target: HTMLElement, container: HTMLElement ): void {
+		const drawer = container.querySelector(
+			`.gravatar-hovercard__drawer[data-drawer-name="${ target.dataset.targetDrawer }"]`
+		);
 
 		if ( ! drawer ) {
 			return;
@@ -537,7 +525,13 @@ export default class Hovercards {
 
 			return `
 				<li class="gravatar-hovercard__drawer-item">
-					<img class="gravatar-hovercard__drawer-item-icon" width="24" height="24" src="${ `https://secure.gravatar.com/${ icons[ key ] }` }" alt="">
+					<img 
+						class="gravatar-hovercard__drawer-item-icon" 
+						width="24" 
+						height="24" 
+						src="https://secure.gravatar.com/${ icons[ key ] }" 
+						alt=""
+					>
 					<div class="gravatar-hovercard__drawer-item-info">
 						<span class="gravatar-hovercard__drawer-item-label">${ key.replace( '_', ' ' ) }</span>
 						<span class="gravatar-hovercard__drawer-item-text">${ text }</span>
@@ -668,10 +662,9 @@ export default class Hovercards {
 			}
 
 			const urlParams = new URLSearchParams( params );
-			if ( ! urlParams.has( 's' ) ) {
-				urlParams.append( 's', '128' );
-				params = `?${ urlParams.toString() }`;
-			}
+			urlParams.delete( 'size' );
+			urlParams.set( 's', '256' );
+			params = `?${ urlParams.toString() }`;
 
 			let hovercard: HTMLDivElement;
 
