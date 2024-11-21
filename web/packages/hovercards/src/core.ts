@@ -666,6 +666,11 @@ export default class Hovercards {
 			params = `?${ urlParams.toString() }`;
 
 			let hovercard: HTMLDivElement;
+			const positionOptions = {
+				placement: this._placement,
+				offset: this._offset,
+				autoFlip: this._autoFlip,
+			};
 
 			if ( this._cachedProfiles.has( hash ) ) {
 				const profile = this._cachedProfiles.get( hash );
@@ -728,6 +733,9 @@ export default class Hovercards {
 						hovercard.classList.remove( 'gravatar-hovercard--skeleton' );
 						hovercard.replaceChildren( hovercardInner );
 
+						// Recalculate the hovercard position after fetching the user data
+						computePosition( ref, hovercard, positionOptions );
+
 						this._onFetchProfileSuccess( hash, this._cachedProfiles.get( hash ) );
 					} )
 					.catch( ( code ) => {
@@ -768,18 +776,7 @@ export default class Hovercards {
 			// Placing the hovercard at the top-level of the dc to avoid being clipped by overflow
 			dc.body.appendChild( hovercard );
 
-			const { x, y, padding, paddingValue } = computePosition( ref, hovercard, {
-				placement: this._placement,
-				offset: this._offset,
-				autoFlip: this._autoFlip,
-			} );
-
-			hovercard.style.position = 'absolute';
-			hovercard.style.left = `${ x }px`;
-			hovercard.style.top = `${ y }px`;
-			// To bridge the gap between the ref and the hovercard,
-			// ensuring that the hovercard remains visible when the mouse hovers over the gap
-			hovercard.style[ padding ] = `${ paddingValue }px`;
+			computePosition( ref, hovercard, positionOptions );
 
 			this._onHovercardShown( hash, hovercard );
 		}, this._delayToShow );
