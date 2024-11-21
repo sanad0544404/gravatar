@@ -515,8 +515,7 @@ export default class Hovercards {
 
 		const items = contactsData.map( ( [ key, value ]: string[] ) => {
 			const url = getUrl( key, value );
-			let text = value.replace( /^(https?:\/\/)/, '' );
-			text = text.replace( /^(www\.)/, '' );
+			let text = value.replace( /^(https?:\/\/)?(www\.)?/, '' );
 			text = text.endsWith( '/' ) ? text.slice( 0, -1 ) : text;
 
 			if ( url ) {
