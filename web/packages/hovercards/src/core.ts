@@ -1,5 +1,5 @@
-import type { Placement } from './compute-position';
-import computePosition from './compute-position';
+import type { Placement } from './assign-position';
+import assignPosition from './assign-position';
 import { escUrl, escHtml } from './sanitizer';
 import addQueryArg from './add-query-arg';
 import __ from './i18n';
@@ -155,7 +155,7 @@ export default class Hovercards {
 	_cachedProfiles = new Map< string, ProfileData >();
 
 	constructor( {
-		placement = 'right',
+		placement = 'right-start',
 		autoFlip = true,
 		offset = 10,
 		delayToShow = 500,
@@ -736,7 +736,7 @@ export default class Hovercards {
 						hovercard.replaceChildren( hovercardInner );
 
 						// Recalculate the hovercard position after fetching the user data
-						computePosition( ref, hovercard, positionOptions );
+						assignPosition( ref, hovercard, positionOptions );
 
 						this._onFetchProfileSuccess( hash, this._cachedProfiles.get( hash ) );
 						this._onHovercardShown( hash, hovercard );
@@ -779,7 +779,7 @@ export default class Hovercards {
 			// Placing the hovercard at the top-level of the dc to avoid being clipped by overflow
 			dc.body.appendChild( hovercard );
 
-			computePosition( ref, hovercard, positionOptions );
+			assignPosition( ref, hovercard, positionOptions );
 		}, this._delayToShow );
 
 		this._showHovercardTimeoutIds.set( id, timeoutId );

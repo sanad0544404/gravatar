@@ -26,18 +26,21 @@ const paddingMap: Record< string, 'paddingBottom' | 'paddingTop' | 'paddingRight
 };
 
 /**
- * Computes the position of a card relative to a ref element.
+ * Computes and assigns the position of the card element.
  *
  * @param {HTMLElement}    ref          - The ref element.
  * @param {HTMLDivElement} card         - The card element.
  * @param {Options}        [options={}] - The placement, offset, and auto-flip options.
  * @return {void}
  */
-export default function computingPosition(
+export default function assignPosition(
 	ref: HTMLElement,
 	card: HTMLDivElement,
 	{ placement = 'right', offset = 0, autoFlip = true }: Options = {}
 ): void {
+	// Reset the card's padding for re-calculation.
+	card.style.padding = '0';
+
 	const refRect = ref.getBoundingClientRect();
 	const cardRect = card.getBoundingClientRect();
 	const refScrollT = refRect.top + scrollY;
