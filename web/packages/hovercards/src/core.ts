@@ -683,6 +683,8 @@ export default class Hovercards {
 						i18n: this._i18n,
 					}
 				);
+
+				this._onHovercardShown( hash, hovercard );
 			} else {
 				hovercard = Hovercards.createHovercardSkeleton( { additionalClass: this._additionalClass } );
 
@@ -737,6 +739,7 @@ export default class Hovercards {
 						computePosition( ref, hovercard, positionOptions );
 
 						this._onFetchProfileSuccess( hash, this._cachedProfiles.get( hash ) );
+						this._onHovercardShown( hash, hovercard );
 					} )
 					.catch( ( code ) => {
 						let message = __( this._i18n, 'Sorry, we are unable to load this Gravatar profile.' );
@@ -777,8 +780,6 @@ export default class Hovercards {
 			dc.body.appendChild( hovercard );
 
 			computePosition( ref, hovercard, positionOptions );
-
-			this._onHovercardShown( hash, hovercard );
 		}, this._delayToShow );
 
 		this._showHovercardTimeoutIds.set( id, timeoutId );
