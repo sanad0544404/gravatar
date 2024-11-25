@@ -9,7 +9,7 @@
 
 Gravatar Hovercards is an easy-to-use library that brings [Gravatar](https://gravatar.com/) profiles to your website. It converts static [Gravatar images](#1-gravatar-images), or any element with the [`data-gravatar-hash` attribute](#2-elements-with-data-gravatar-hash-attribute) into interactive hovercards.
 
-<img src="https://github.com/Automattic/gravatar/assets/21308003/f6b2b41e-b5c0-471e-a67a-4f21454af255" width="600" height="309" />
+<img src="https://github.com/user-attachments/assets/7bd0d269-18fa-446a-866f-2273c7f8464d" width="480" height="356" />
 
 ## Table of Contents
 
@@ -231,7 +231,11 @@ interface ProfileData {
     description?: string;
     jobTitle?: string;
     company?: string;
+    headerImage?: string;
+    backgroundColor?: string;
     verifiedAccounts?: Record< 'label' | 'icon' | 'url' | 'type', string >[];
+    contactInfo?: ContactInfo;
+    payments?: Payments;
 }
 ```
 
@@ -489,8 +493,10 @@ A few items of text are used when displaying a hovercard. The library contains E
 
 The following phrases are used:
 
-- `Edit your profile`
-- `View profile`
+- `Edit your profile →`
+- `View profile →`
+- `Contact`
+- `Send money`
 - `Sorry, we are unable to load this Gravatar profile.`
 - `Profile not found.`
 - `Too Many Requests.`
@@ -500,7 +506,7 @@ The `i18n` option is an object that maps from the English text to the language o
 
 ```js
 {
-  'Edit your profile': 'Modifier votre profil'
+  'Edit your profile →': 'Modifier votre profil →'
 }
 ```
 

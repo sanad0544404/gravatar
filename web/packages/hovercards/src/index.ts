@@ -1,6 +1,10 @@
-export type { Placement } from './compute-position';
+export type { Placement } from './assign-position';
 export type {
 	VerifiedAccount,
+	ContactInfo,
+	Payments,
+	PaymentLink,
+	CryptoWallet,
 	ProfileData,
 	CreateHovercardOptions,
 	CreateHovercard,

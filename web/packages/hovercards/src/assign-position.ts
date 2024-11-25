@@ -18,14 +18,7 @@ type Options = Partial< {
 	autoFlip: boolean;
 } >;
 
-interface ReturnValues {
-	x: number;
-	y: number;
-	padding: 'paddingBottom' | 'paddingTop' | 'paddingRight' | 'paddingLeft';
-	paddingValue: number;
-}
-
-const paddingMap: Record< string, ReturnValues[ 'padding' ] > = {
+const paddingMap: Record< string, 'paddingBottom' | 'paddingTop' | 'paddingRight' | 'paddingLeft' > = {
 	top: 'paddingBottom',
 	bottom: 'paddingTop',
 	left: 'paddingRight',
@@ -33,18 +26,21 @@ const paddingMap: Record< string, ReturnValues[ 'padding' ] > = {
 };
 
 /**
- * Computes the position of a card relative to a ref element.
+ * Computes and assigns the position of the card element.
  *
  * @param {HTMLElement}    ref          - The ref element.
  * @param {HTMLDivElement} card         - The card element.
  * @param {Options}        [options={}] - The placement, offset, and auto-flip options.
- * @return {ReturnValues}               - The computed position values.
+ * @return {void}
  */
-export default function computingPosition(
+export default function assignPosition(
 	ref: HTMLElement,
 	card: HTMLDivElement,
 	{ placement = 'right', offset = 0, autoFlip = true }: Options = {}
-): ReturnValues {
+): void {
+	// Reset the card's padding for re-calculation.
+	card.style.padding = '0';
+
 	const refRect = ref.getBoundingClientRect();
 	const cardRect = card.getBoundingClientRect();
 	const refScrollT = refRect.top + scrollY;
@@ -110,5 +106,10 @@ export default function computingPosition(
 		}
 	}
 
-	return { x, y, padding: paddingMap[ dir ], paddingValue: offset };
+	card.style.position = 'absolute';
+	card.style.left = `${ x }px`;
+	card.style.top = `${ y }px`;
+	// To bridge the gap between the ref and the hovercard,
+	// ensuring that the hovercard remains visible when the mouse hovers over the gap
+	card.style[ paddingMap[ dir ] ] = `${ offset }px`;
 }

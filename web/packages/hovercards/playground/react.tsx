@@ -11,6 +11,9 @@ const props: HovercardsProps = {
 	// attach: document.body,
 	// placement: 'top',
 	// ignoreSelector: '#grav-img-1',
+	i18n: {
+		'View profile →': 'Voir le profil →',
+	},
 };
 
 function App() {
@@ -25,7 +28,7 @@ function App() {
 	}, [ attach ] );
 
 	return (
-		<div style={ { display: 'flex', flexDirection: 'column', gap: '5rem' } }>
+		<div style={ { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5rem' } }>
 			<div>
 				<div ref={ containerRef } style={ { display: 'flex', flexDirection: 'column', gap: '5rem' } }>
 					<img
@@ -42,15 +45,12 @@ function App() {
 					/>
 				</div>
 			</div>
-			<Hovercards style={ { display: 'flex', flexDirection: 'column', gap: '5rem' } } { ...props }>
+			<Hovercards
+				style={ { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5rem' } }
+				{ ...props }
+			>
 				<img
-					src="https://www.gravatar.com/avatar/33252cd1f33526af53580fcb1736172f06e6716f32afdd1be19ec3096d15dea5?s=60&d=retro&r=g"
-					width="60"
-					height="60"
-					alt="Gravatar"
-				/>
-				<img
-					src="https://www.gravatar.com/avatar/c3bb8d897bb538896708195dd9eb162f585654611c50a3a1c9a16a7b64f33270"
+					src="https://www.gravatar.com/avatar/20e74a1399c883caeeba81b57007bcaa058940dcdffca01babfddbaefa5c3c4a?s=60&d=retro&r=g"
 					width="60"
 					height="60"
 					alt="Gravatar"

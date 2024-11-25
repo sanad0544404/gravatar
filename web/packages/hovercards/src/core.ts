@@ -1,5 +1,5 @@
-import type { Placement } from './compute-position';
-import computePosition from './compute-position';
+import type { Placement } from './assign-position';
+import assignPosition from './assign-position';
 import { escUrl, escHtml } from './sanitizer';
 import addQueryArg from './add-query-arg';
 import __ from './i18n';
@@ -20,6 +20,30 @@ export interface VerifiedAccount {
 	isHidden: boolean;
 }
 
+export type ContactInfo = Partial< {
+	home_phone: string;
+	work_phone: string;
+	cell_phone: string;
+	email: string;
+	contact_form: string;
+	calendar: string;
+} >;
+
+export interface PaymentLink {
+	label: string;
+	url: string;
+}
+
+export interface CryptoWallet {
+	label: string;
+	address: string;
+}
+
+export interface Payments {
+	links?: PaymentLink[];
+	crypto_wallets?: CryptoWallet[];
+}
+
 export interface ProfileData {
 	hash: string;
 	avatarUrl: string;
@@ -29,7 +53,11 @@ export interface ProfileData {
 	description?: string;
 	jobTitle?: string;
 	company?: string;
+	headerImage?: string;
+	backgroundColor?: string;
 	verifiedAccounts?: VerifiedAccount[];
+	contactInfo?: ContactInfo;
+	payments?: Payments;
 }
 
 export interface CreateHovercardOptions {
@@ -127,7 +155,7 @@ export default class Hovercards {
 	_cachedProfiles = new Map< string, ProfileData >();
 
 	constructor( {
-		placement = 'right',
+		placement = 'right-start',
 		autoFlip = true,
 		offset = 10,
 		delayToShow = 500,
@@ -250,7 +278,11 @@ export default class Hovercards {
 			description,
 			jobTitle,
 			company,
+			headerImage,
 			verifiedAccounts = [],
+			payments,
+			contactInfo,
+			backgroundColor,
 		} = profileData;
 
 		const hovercard = dc.createElement( 'div' );
@@ -259,6 +291,10 @@ export default class Hovercards {
 		const trackedProfileUrl = escUrl( addQueryArg( profileUrl, 'utm_source', 'hovercard' ) );
 		const username = escHtml( displayName );
 		const isEditProfile = ! description && myHash === hash;
+		const jobInfo = [ jobTitle, company ].filter( Boolean ).join( ', ' );
+		const hasPayments = payments?.links?.length || payments?.crypto_wallets?.length;
+		const nonEmptyContacts = Object.entries( contactInfo || {} ).filter( ( [ _, value ] ) => !! value );
+
 		const renderSocialLinks = verifiedAccounts
 			.slice( 0, 3 )
 			.reduce( ( links, { label, icon, url, type, isHidden } ) => {
@@ -278,13 +314,46 @@ export default class Hovercards {
 			}, [] )
 			.join( '' );
 
-		const jobInfo = [ jobTitle, company ].filter( Boolean ).join( ', ' );
+		let ctaButtons = '';
+		let contactsDrawer = '';
+		let sendMoneyDrawer = '';
+
+		if ( nonEmptyContacts.length || hasPayments ) {
+			if ( nonEmptyContacts.length ) {
+				ctaButtons += `
+					<button class="gravatar-hovercard__button" data-target-drawer="contact">${ __( i18n, 'Contact' ) }</button>
+				`;
+
+				contactsDrawer = Hovercards._createDrawer(
+					'contact',
+					__( i18n, 'Contact' ),
+					Hovercards._createContactDrawerContent( nonEmptyContacts )
+				);
+			}
+
+			if ( hasPayments ) {
+				ctaButtons += `
+					<button class="gravatar-hovercard__button" data-target-drawer="send-money">${ __( i18n, 'Send money' ) }</button>
+				`;
+
+				sendMoneyDrawer = Hovercards._createDrawer(
+					'send-money',
+					__( i18n, 'Send money' ),
+					Hovercards._createSendMoneyDrawerContent( payments )
+				);
+			}
+
+			ctaButtons = `
+				<div class="gravatar-hovercard__buttons">${ ctaButtons }</div>
+			`;
+		}
 
 		hovercard.innerHTML = `
 			<div class="gravatar-hovercard__inner">
+				${ headerImage ? `<div class="gravatar-hovercard__header-image"></div>` : '' }
 				<div class="gravatar-hovercard__header">
 					<a class="gravatar-hovercard__avatar-link" href="${ trackedProfileUrl }" target="_blank">
-						<img class="gravatar-hovercard__avatar" src="${ escUrl( avatarUrl ) }" width="72" height="72" alt="${ username }" />
+						<img class="gravatar-hovercard__avatar" src="${ escUrl( avatarUrl ) }" width="104" height="104" alt="${ username }" />
 					</a>
 					<a class="gravatar-hovercard__personal-info-link" href="${ trackedProfileUrl }" target="_blank">
 						<h4 class="gravatar-hovercard__name">${ username }</h4>
@@ -295,31 +364,223 @@ export default class Hovercards {
 				<div class="gravatar-hovercard__body">
 					${ description ? `<p class="gravatar-hovercard__description">${ escHtml( description ) }</p>` : '' }
 				</div>
+				<div class="gravatar-hovercard__social-links">
+					<img class="gravatar-hovercard__verified-icon" src="https://secure.gravatar.com/icons/verified.svg" width="32" height="32" title="Verified accounts" alt="Verified icon">
+					<a class="gravatar-hovercard__social-link" href="${ trackedProfileUrl }" target="_blank" data-service-name="gravatar">
+						<img class="gravatar-hovercard__social-icon" src="https://secure.gravatar.com/icons/gravatar.svg" width="32" height="32" alt="Gravatar" />
+					</a>
+					${ renderSocialLinks }
+				</div>
+				${ ctaButtons }
 				<div class="gravatar-hovercard__footer">
-					<div class="gravatar-hovercard__social-links">
-						<a class="gravatar-hovercard__social-link" href="${ trackedProfileUrl }" target="_blank" data-service-name="gravatar">
-							<img class="gravatar-hovercard__social-icon" src="https://secure.gravatar.com/icons/gravatar.svg" width="32" height="32" alt="Gravatar" />
-						</a>
-						${ renderSocialLinks }
-					</div>
+					<span class="gravatar-hovercard__profile-url" title="${ profileUrl }">${ profileUrl.replace( 'https://', '' ) }</span>
 					<a
 						class="gravatar-hovercard__profile-link${ isEditProfile ? ' gravatar-hovercard__profile-link--edit' : '' }"
 						href="${ isEditProfile ? 'https://gravatar.com/profiles/edit?utm_source=hovercard' : trackedProfileUrl }"
 						target="_blank"
 					>
-						<span class="gravatar-hovercard__profile-link-text">
-							${ isEditProfile ? __( i18n, 'Edit your profile' ) : __( i18n, 'View profile' ) }
-						</span>
-						<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-							<path d="M12.6667 8.33338L9.16666 12.1667M12.6667 8.33338L2.66666 8.33338M12.6667 8.33338L9.16666 4.83338" stroke-width="1.5"/>
-						</svg>
+						${ isEditProfile ? __( i18n, 'Edit your profile →' ) : __( i18n, 'View profile →' ) }
 					</a>
 				</div>
+				${ contactsDrawer }
+				${ sendMoneyDrawer }
+				${ backgroundColor ? '<div class="gravatar-hovercard__profile-color"></div>' : '' }
 			</div>
-    	`;
+		`;
+
+		const hovercardInner = hovercard.querySelector< HTMLElement >( '.gravatar-hovercard__inner' );
+		const headerImageEl = hovercardInner.querySelector< HTMLDivElement >( '.gravatar-hovercard__header-image' );
+		const profileColorEl = hovercardInner.querySelector< HTMLDivElement >( '.gravatar-hovercard__profile-color' );
+
+		if ( headerImage && headerImageEl ) {
+			headerImageEl.style.background = headerImage;
+		}
+
+		if ( backgroundColor && profileColorEl ) {
+			profileColorEl.style.background = backgroundColor;
+		}
+
+		hovercardInner.querySelectorAll( '.gravatar-hovercard__button' ).forEach( ( el: HTMLButtonElement ) => {
+			el.addEventListener( 'click', () => Hovercards._openDrawer( el, hovercardInner ) );
+		} );
+		hovercardInner.querySelectorAll( '.gravatar-hovercard__drawer-close' ).forEach( ( el: HTMLButtonElement ) => {
+			el.addEventListener( 'click', () => Hovercards._closeDrawer( el, hovercardInner ) );
+		} );
+		hovercardInner.querySelectorAll( '.gravatar-hovercard__drawer-backdrop' ).forEach( ( el: HTMLDivElement ) => {
+			el.addEventListener( 'click', () => Hovercards._closeDrawer( el, hovercardInner ) );
+		} );
 
 		return hovercard;
 	};
+
+	/**
+	 * Creates a hovercard drawer.
+	 *
+	 * @param {string} name      - The drawer name.
+	 * @param {string} titleText - The title shown at the drawer's header.
+	 * @param {string} content   - The drawer inner content.
+	 * @return {string}          - The drawer HTML string.
+	 */
+	private static _createDrawer( name: string, titleText: string, content: string ): string {
+		return `
+			<div class="gravatar-hovercard__drawer" data-drawer-name="${ name }">
+				<div class="gravatar-hovercard__drawer-backdrop" data-target-drawer="${ name }"></div>
+				<div class="gravatar-hovercard__drawer-card">
+					<div class="gravatar-hovercard__drawer-header">
+						<h2 class="gravatar-hovercard__drawer-title">${ titleText }</h2>
+						<button class="gravatar-hovercard__drawer-close" data-target-drawer="${ name }">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M12 13.0607L15.7123 16.773L16.773 15.7123L13.0607 12L16.773 8.28772L15.7123 7.22706L12 10.9394L8.28771 7.22705L7.22705 8.28771L10.9394 12L7.22706 15.7123L8.28772 16.773L12 13.0607Z" fill="#101517"></path>
+							</svg>
+						</button>
+					</div>
+					<ul class="gravatar-hovercard__drawer-items">
+						${ content }
+					</ul>
+				</div>
+			</div>
+		`;
+	}
+
+	/**
+	 * Opens a hovercard drawer.
+	 *
+	 * @param {HTMLElement} target    - The target drawer.
+	 * @param {HTMLElement} container - The container context to search for the drawer.
+	 * @return {void}
+	 */
+	private static _openDrawer( target: HTMLElement, container: HTMLElement ): void {
+		const drawer = container.querySelector(
+			`.gravatar-hovercard__drawer[data-drawer-name="${ target.dataset.targetDrawer }"]`
+		);
+
+		if ( ! drawer ) {
+			return;
+		}
+
+		drawer.classList.add( 'gravatar-hovercard__drawer--open' );
+	}
+
+	/**
+	 * Closes a hovercard drawer.
+	 *
+	 * @param {HTMLElement} target    - The drawer selector.
+	 * @param {HTMLElement} container - The container context to search for the drawer.
+	 * @return {void}
+	 */
+	private static _closeDrawer( target: HTMLElement, container: HTMLElement ): void {
+		const drawer = container.querySelector(
+			`.gravatar-hovercard__drawer[data-drawer-name="${ target.dataset.targetDrawer }"]`
+		);
+
+		if ( ! drawer ) {
+			return;
+		}
+
+		drawer.classList.add( 'gravatar-hovercard__drawer--closing' );
+		drawer.classList.remove( 'gravatar-hovercard__drawer--open' );
+
+		setTimeout( () => {
+			drawer.classList.remove( 'gravatar-hovercard__drawer--closing' );
+		}, 300 );
+	}
+
+	/**
+	 * Creates the contact drawer content.
+	 *
+	 * @param {Record< string, any >[]} contactsData - The user's contact data.
+	 * @return {string}                              - The contact drawer content.
+	 */
+	private static _createContactDrawerContent( contactsData: Record< string, any >[] ): string {
+		const icons: Record< string, string > = {
+			email: 'icons/mail.svg',
+			home_phone: 'icons/home-phone.svg',
+			work_phone: 'icons/work-phone.svg',
+			cell_phone: 'icons/mobile-phone.svg',
+			contact_form: 'icons/envelope.svg',
+			calendar: 'icons/calendar.svg',
+		};
+
+		const getUrl = ( type: string, value: string ) => {
+			switch ( type ) {
+				case 'email':
+					return `mailto:${ value }`;
+				case 'contact_form':
+				case 'calendar':
+					return value.startsWith( 'http' ) ? value : `https://${ value }`;
+				default:
+					return null;
+			}
+		};
+
+		const items = contactsData.map( ( [ key, value ]: string[] ) => {
+			const url = getUrl( key, value );
+			let text = value.replace( /^(https?:\/\/)?(www\.)?/, '' );
+			text = text.endsWith( '/' ) ? text.slice( 0, -1 ) : text;
+
+			if ( url ) {
+				text = `<a class="gravatar-hovercard__drawer-item-link" href="${ url }" target="_blank">${ text }</a>`;
+			}
+
+			return `
+				<li class="gravatar-hovercard__drawer-item">
+					<img 
+						class="gravatar-hovercard__drawer-item-icon" 
+						width="24" 
+						height="24" 
+						src="https://secure.gravatar.com/${ icons[ key ] }" 
+						alt=""
+					>
+					<div class="gravatar-hovercard__drawer-item-info">
+						<span class="gravatar-hovercard__drawer-item-label">${ key.replace( '_', ' ' ) }</span>
+						<span class="gravatar-hovercard__drawer-item-text">${ text }</span>
+					</div>
+				</li>
+			`;
+		} );
+
+		return items.join( '' );
+	}
+
+	/**
+	 * Creates the send money drawer content.
+	 *
+	 * @param {Payments} payments - The user's payment data.
+	 * @return {string}           - The send money drawer content.
+	 */
+	private static _createSendMoneyDrawerContent( payments: Payments ): string {
+		const items: string[] = [];
+
+		payments.links?.forEach( ( item ) => {
+			items.push( `
+				<li class="gravatar-hovercard__drawer-item">
+					<img class="gravatar-hovercard__drawer-item-icon" width="24" height="24" src="https://secure.gravatar.com/icons/link.svg" alt="">
+					<div class="gravatar-hovercard__drawer-item-info">
+						<span class="gravatar-hovercard__drawer-item-label">${ item.label }</span>
+						<span class="gravatar-hovercard__drawer-item-text">
+							<a class="gravatar-hovercard__drawer-item-link" href="${ item.url }" target="_blank">
+								${ item.url.replace( /^(https?:\/\/)/, '' ) }
+							</a>
+						</span>
+					</div>
+				</li>
+			` );
+		} );
+
+		payments.crypto_wallets?.forEach( ( item ) => {
+			items.push( `
+				<li class="gravatar-hovercard__drawer-item">
+					<img class="gravatar-hovercard__drawer-item-icon" width="24" height="24" src="https://secure.gravatar.com/icons/link.svg" alt="">
+					<div class="gravatar-hovercard__drawer-item-info">
+						<span class="gravatar-hovercard__drawer-item-label">${ item.label }</span>
+						<span class="gravatar-hovercard__drawer-item-text">${ item.address }</span>
+					</div>
+				</li>
+			` );
+		} );
+
+		return items.join( '' );
+	}
 
 	/**
 	 * Creates a skeleton hovercard element.
@@ -340,9 +601,14 @@ export default class Hovercards {
 					<div class="gravatar-hovercard__avatar-link"></div>
 					<div class="gravatar-hovercard__personal-info-link"></div>
 				</div>
-				<div class="gravatar-hovercard__footer">
+				<div class="gravatar-hovercard__body"></div>
+				<div class="gravatar-hovercard__social-links">
 					<div class="gravatar-hovercard__social-link"></div>
-					<div class="gravatar-hovercard__profile-link""></div>
+					<div class="gravatar-hovercard__social-link"></div>
+				</div>
+				<div class="gravatar-hovercard__footer">
+					<div class="gravatar-hovercard__profile-url"></div>
+					<div class="gravatar-hovercard__profile-link"></div>
 				</div>
 			</div>
     	`;
@@ -372,7 +638,7 @@ export default class Hovercards {
 
 		hovercard.innerHTML = `
 			<div class="gravatar-hovercard__inner">
-				<img class="gravatar-hovercard__avatar" src="${ avatarUrl }" width="72" height="72" alt="${ avatarAlt }" />
+				<img class="gravatar-hovercard__avatar" src="${ avatarUrl }" width="104" height="104" alt="${ avatarAlt }" />
 				<i class="gravatar-hovercard__error-message">${ message }</i>
 			</div>
     	`;
@@ -394,7 +660,17 @@ export default class Hovercards {
 				return;
 			}
 
+			const urlParams = new URLSearchParams( params );
+			urlParams.delete( 'size' );
+			urlParams.set( 's', '256' );
+			params = `?${ urlParams.toString() }`;
+
 			let hovercard: HTMLDivElement;
+			const positionOptions = {
+				placement: this._placement,
+				offset: this._offset,
+				autoFlip: this._autoFlip,
+			};
 
 			if ( this._cachedProfiles.has( hash ) ) {
 				const profile = this._cachedProfiles.get( hash );
@@ -407,6 +683,8 @@ export default class Hovercards {
 						i18n: this._i18n,
 					}
 				);
+
+				this._onHovercardShown( hash, hovercard );
 			} else {
 				hovercard = Hovercards.createHovercardSkeleton( { additionalClass: this._additionalClass } );
 
@@ -431,6 +709,8 @@ export default class Hovercards {
 							description: data.description,
 							jobTitle: data.job_title,
 							company: data.company,
+							headerImage: data.header_image,
+							backgroundColor: data.background_color,
 							verifiedAccounts: data.verified_accounts?.map( ( account: AccountData ) => ( {
 								type: account.service_type,
 								label: account.service_label,
@@ -438,6 +718,8 @@ export default class Hovercards {
 								url: account.url,
 								isHidden: account.is_hidden,
 							} ) ),
+							contactInfo: data.contact_info,
+							payments: data.payments,
 						} );
 
 						const profile = this._cachedProfiles.get( hash );
@@ -453,7 +735,11 @@ export default class Hovercards {
 						hovercard.classList.remove( 'gravatar-hovercard--skeleton' );
 						hovercard.replaceChildren( hovercardInner );
 
+						// Recalculate the hovercard position after fetching the user data
+						assignPosition( ref, hovercard, positionOptions );
+
 						this._onFetchProfileSuccess( hash, this._cachedProfiles.get( hash ) );
+						this._onHovercardShown( hash, hovercard );
 					} )
 					.catch( ( code ) => {
 						let message = __( this._i18n, 'Sorry, we are unable to load this Gravatar profile.' );
@@ -493,20 +779,7 @@ export default class Hovercards {
 			// Placing the hovercard at the top-level of the dc to avoid being clipped by overflow
 			dc.body.appendChild( hovercard );
 
-			const { x, y, padding, paddingValue } = computePosition( ref, hovercard, {
-				placement: this._placement,
-				offset: this._offset,
-				autoFlip: this._autoFlip,
-			} );
-
-			hovercard.style.position = 'absolute';
-			hovercard.style.left = `${ x }px`;
-			hovercard.style.top = `${ y }px`;
-			// To bridge the gap between the ref and the hovercard,
-			// ensuring that the hovercard remains visible when the mouse hovers over the gap
-			hovercard.style[ padding ] = `${ paddingValue }px`;
-
-			this._onHovercardShown( hash, hovercard );
+			assignPosition( ref, hovercard, positionOptions );
 		}, this._delayToShow );
 
 		this._showHovercardTimeoutIds.set( id, timeoutId );
