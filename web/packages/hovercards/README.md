@@ -175,13 +175,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
 You can pass an object of options to the `Hovercards` constructor to customize the behavior of your hovercards. The following options are available:
 
-##### `placement: string = 'right'`
+##### `placement: string = 'right-start'`
 
 The placement of the hovercard relative to the target element. Possible values are `top`, `bottom`, `left`, `right`, `top-start`, `top-end`, `bottom-start`, `bottom-end`, `left-start`, `left-end`, `right-start`, and `right-end`.
 
 ##### `autoFlip: boolean = true`
 
 Determines whether the hovercard's placement should automatically flip when there is not enough display space.
+
+##### `autoShift: boolean = true`
+
+Determines whether the hovercard's placement should automatically shift when there is not enough display space.
 
 ##### `offset: number = 10`
 
