@@ -39,10 +39,10 @@ export interface CryptoWallet {
 	address: string;
 }
 
-export interface Payments {
-	links?: PaymentLink[];
-	crypto_wallets?: CryptoWallet[];
-}
+export type Payments = Partial< {
+	links: PaymentLink[];
+	crypto_wallets: CryptoWallet[];
+} >;
 
 export interface ProfileData {
 	hash: string;
@@ -107,6 +107,7 @@ export type Options = Partial< {
 	placement: Placement;
 	offset: number;
 	autoFlip: boolean;
+	autoShift: boolean;
 	delayToShow: number;
 	delayToHide: number;
 	additionalClass: string;
@@ -136,6 +137,7 @@ export default class Hovercards {
 	_placement: Placement;
 	_offset: number;
 	_autoFlip: boolean;
+	_autoShift: boolean;
 	_delayToShow: number;
 	_delayToHide: number;
 	_additionalClass: string;
@@ -157,6 +159,7 @@ export default class Hovercards {
 	constructor( {
 		placement = 'right-start',
 		autoFlip = true,
+		autoShift = true,
 		offset = 10,
 		delayToShow = 500,
 		delayToHide = 300,
@@ -172,6 +175,7 @@ export default class Hovercards {
 	}: Options = {} ) {
 		this._placement = placement;
 		this._autoFlip = autoFlip;
+		this._autoShift = autoShift;
 		this._offset = offset;
 		this._delayToShow = delayToShow;
 		this._delayToHide = delayToHide;
@@ -187,7 +191,7 @@ export default class Hovercards {
 	}
 
 	/**
-	 * Queries hovercard refs on or within the target element
+	 * Queries hovercard refs on or within the target element.
 	 *
 	 * @param {HTMLElement} target            - The element to query.
 	 * @param {string}      dataAttributeName - Data attribute name associated with Gravatar hashes.
@@ -420,6 +424,7 @@ export default class Hovercards {
 	 * @param {string} titleText - The title shown at the drawer's header.
 	 * @param {string} content   - The drawer inner content.
 	 * @return {string}          - The drawer HTML string.
+	 * @private
 	 */
 	private static _createDrawer( name: string, titleText: string, content: string ): string {
 		return `
@@ -448,6 +453,7 @@ export default class Hovercards {
 	 * @param {HTMLElement} target    - The target drawer.
 	 * @param {HTMLElement} container - The container context to search for the drawer.
 	 * @return {void}
+	 * @private
 	 */
 	private static _openDrawer( target: HTMLElement, container: HTMLElement ): void {
 		const drawer = container.querySelector(
@@ -467,6 +473,7 @@ export default class Hovercards {
 	 * @param {HTMLElement} target    - The drawer selector.
 	 * @param {HTMLElement} container - The container context to search for the drawer.
 	 * @return {void}
+	 * @private
 	 */
 	private static _closeDrawer( target: HTMLElement, container: HTMLElement ): void {
 		const drawer = container.querySelector(
@@ -490,6 +497,7 @@ export default class Hovercards {
 	 *
 	 * @param {Record< string, any >[]} contactsData - The user's contact data.
 	 * @return {string}                              - The contact drawer content.
+	 * @private
 	 */
 	private static _createContactDrawerContent( contactsData: Record< string, any >[] ): string {
 		const icons: Record< string, string > = {
@@ -547,6 +555,7 @@ export default class Hovercards {
 	 *
 	 * @param {Payments} payments - The user's payment data.
 	 * @return {string}           - The send money drawer content.
+	 * @private
 	 */
 	private static _createSendMoneyDrawerContent( payments: Payments ): string {
 		const items: string[] = [];
@@ -670,6 +679,7 @@ export default class Hovercards {
 				placement: this._placement,
 				offset: this._offset,
 				autoFlip: this._autoFlip,
+				autoShift: this._autoShift,
 			};
 
 			if ( this._cachedProfiles.has( hash ) ) {
@@ -776,7 +786,7 @@ export default class Hovercards {
 			hovercard.addEventListener( 'mouseenter', () => clearInterval( this._hideHovercardTimeoutIds.get( id ) ) );
 			hovercard.addEventListener( 'mouseleave', () => this._hideHovercard( id ) );
 
-			// Placing the hovercard at the top-level of the dc to avoid being clipped by overflow
+			// Placing the hovercard at the top-level of the document to avoid being clipped by overflow
 			dc.body.appendChild( hovercard );
 
 			assignPosition( ref, hovercard, positionOptions );
