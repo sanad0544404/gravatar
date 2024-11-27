@@ -9,7 +9,7 @@
 
 Gravatar Hovercards is an easy-to-use library that brings [Gravatar](https://gravatar.com/) profiles to your website. It converts static [Gravatar images](#1-gravatar-images), or any element with the [`data-gravatar-hash` attribute](#2-elements-with-data-gravatar-hash-attribute) into interactive hovercards.
 
-<img src="https://github.com/user-attachments/assets/7bd0d269-18fa-446a-866f-2273c7f8464d" width="480" height="356" />
+<img src="https://github.com/user-attachments/assets/b12f944e-1134-4e5e-a2ec-cbd27af59bc7" width="480" height="356" />
 
 ## Table of Contents
 

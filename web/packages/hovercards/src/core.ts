@@ -365,11 +365,13 @@ export default class Hovercards {
 						${ location ? `<p class="gravatar-hovercard__location">${ escHtml( location ) }</p>` : '' }
 					</a>
 				</div>
-				<div class="gravatar-hovercard__body">
-					${ description ? `<p class="gravatar-hovercard__description">${ escHtml( description ) }</p>` : '' }
-				</div>
+				${
+					description &&
+					`<div class="gravatar-hovercard__body">
+						<p class="gravatar-hovercard__description">${ escHtml( description ) }</p>
+					</div>`
+				}
 				<div class="gravatar-hovercard__social-links">
-					<img class="gravatar-hovercard__verified-icon" src="https://secure.gravatar.com/icons/verified.svg" width="32" height="32" title="Verified accounts" alt="Verified icon">
 					<a class="gravatar-hovercard__social-link" href="${ trackedProfileUrl }" target="_blank" data-service-name="gravatar">
 						<img class="gravatar-hovercard__social-icon" src="https://secure.gravatar.com/icons/gravatar.svg" width="32" height="32" alt="Gravatar" />
 					</a>
@@ -610,7 +612,6 @@ export default class Hovercards {
 					<div class="gravatar-hovercard__avatar-link"></div>
 					<div class="gravatar-hovercard__personal-info-link"></div>
 				</div>
-				<div class="gravatar-hovercard__body"></div>
 				<div class="gravatar-hovercard__social-links">
 					<div class="gravatar-hovercard__social-link"></div>
 					<div class="gravatar-hovercard__social-link"></div>
