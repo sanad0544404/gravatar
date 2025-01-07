@@ -151,9 +151,11 @@ $font-sf-pro: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Robo
 	}
 
 	.gravatar-hovercard__profile-url {
-
-		@include ellipsis(1);
-
+		// webkit-box used by ellipsis mixin
+		// doesn't work well for URLs on Firefox
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		color: $color-gray;
 	}
 
