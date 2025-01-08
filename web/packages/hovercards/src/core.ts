@@ -366,10 +366,11 @@ export default class Hovercards {
 					</a>
 				</div>
 				${
-					description &&
-					`<div class="gravatar-hovercard__body">
-						<p class="gravatar-hovercard__description">${ escHtml( description ) }</p>
-					</div>`
+					description
+						? `<div class="gravatar-hovercard__body">
+								<p class="gravatar-hovercard__description">${ escHtml( description ) }</p>
+							</div>`
+						: ''
 				}
 				<div class="gravatar-hovercard__social-links">
 					<a class="gravatar-hovercard__social-link" href="${ trackedProfileUrl }" target="_blank" data-service-name="gravatar">
